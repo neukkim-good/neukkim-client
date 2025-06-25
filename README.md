@@ -1,3 +1,3 @@
-# 5jo-neukkim-good
+# neukkim-client
 
-5조 오좋느좋팀의 신한투자증권 프로디지털아카데미 6기 React 미니 프로젝트 저장소입니다.
+neukkim-client 레포지토리입니다.
