@@ -1,27 +1,31 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
+  const [signUpEmail, setSignUpEmail] = useState("");
+  const [signUpPassword, setSignUpPassword] = useState("");
+  const [signUpNickname, setSignUpNickname] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const router = useRouter();
   const setUser = useUserStore((s) => s.setUser);
 
-  const API = process.env.NEXT_PUBLIC_API_BASE_URL; // env 변수
+  // const API = process.env.NEXT_PUBLIC_API_BASE_URL; // env 변수
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${API}/api/login`, {
+    const res = await fetch("http://localhost:3001/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email: loginEmail, password: loginPassword }),
     });
 
     if (!res.ok) {
@@ -40,29 +44,40 @@ export default function Home() {
       password: "",
     });
 
+    sessionStorage.setItem("token", data.token);
     router.replace("/main");
   };
 
   const handleSignUpSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password !== confirmPassword) {
+    if (signUpPassword !== confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    const res = await fetch(`${API}/api/signup`, {
+    const res = await fetch("http://localhost:3001/users/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({
+        email: signUpEmail,
+        password: signUpPassword,
+        nickname: signUpNickname,
+      }),
     });
 
     if (!res.ok) {
       console.error("회원가입 실패", await res.text());
       return;
     }
-    router.replace("/login");
+    const data = await res.json();
+    console.log("회원가입 성공:", data);
+
+    setSignUpEmail("");
+    setSignUpPassword("");
+
+    setIsLogin(true);
   };
 
   return (
@@ -90,10 +105,11 @@ export default function Home() {
               </label>
               <input
                 type="email"
-                id="email"
+                id="loginemail"
+                value={loginEmail}
                 placeholder="example@email.com"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => setEmail(e.target.value)}
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                onChange={(e) => setLoginEmail(e.target.value)}
                 required
               />
             </div>
@@ -107,10 +123,11 @@ export default function Home() {
               </label>
               <input
                 type="password"
-                id="password"
+                id="loginpassword"
+                value={loginPassword}
                 placeholder="비밀번호를 입력하세요"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => setPassword(e.target.value)}
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                onChange={(e) => setLoginPassword(e.target.value)}
                 required
               />
             </div>
@@ -133,10 +150,28 @@ export default function Home() {
               </label>
               <input
                 type="email"
-                id="email"
+                id="signupemail"
+                value={signUpEmail}
                 placeholder="example@email.com"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => setEmail(e.target.value)}
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                onChange={(e) => setSignUpEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700"
+              >
+                닉네임
+              </label>
+              <input
+                type="text"
+                id="signupnickname"
+                value={signUpNickname}
+                placeholder="홍길동"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                onChange={(e) => setSignUpNickname(e.target.value)}
                 required
               />
             </div>
@@ -150,10 +185,11 @@ export default function Home() {
               </label>
               <input
                 type="password"
-                id="password"
+                id="signuppassword"
+                value={signUpPassword}
                 placeholder="비밀번호를 입력하세요"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                onChange={(e) => setPassword(e.target.value)}
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                onChange={(e) => setSignUpPassword(e.target.value)}
                 required
               />
             </div>
@@ -168,8 +204,9 @@ export default function Home() {
               <input
                 type="password"
                 id="confirm-password"
+                value={confirmPassword}
                 placeholder="비밀번호를 다시 입력하세요"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
