@@ -2,6 +2,7 @@
 // import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 // import { Room } from "@/types/api/Room";
+import { io } from "socket.io-client";
 
 export default function RoomDetailPage() {
   const { room_id } = useParams<{ room_id: string }>();
@@ -15,6 +16,16 @@ export default function RoomDetailPage() {
   //   }, [room_id]);
 
   //   if (!room) return <p>로딩 중…</p>;
+  const socket = io("ws://3.34.9559:3002", {
+    path: "/socket.io",
+    transports: ["websocket"],
+  });
+  socket.on("connect", () => {
+    console.log("Socket connected:", socket.id);
+  });
+  const sendMessage = (message: string) => {
+    socket.emit("message", { room_id, message });
+  };
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-50">
@@ -25,6 +36,12 @@ export default function RoomDetailPage() {
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           실시간 참가자 리스트
         </h2>
+        <button
+          className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+          onClick={() => sendMessage("소켓 통신 테스트")}
+        >
+          소켓 통신 테스트 버튼입니둥
+        </button>
         <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
           <table className="min-w-[300px] table-auto border-collapse">
             <thead className="bg-gray-100">
