@@ -1,11 +1,14 @@
 // tailwind.config.js
 
-/** @type {import('tailwindcss').Config} */
+import("tailwindcss").Config;
 module.exports = {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: [
+    "./src/app/**/*.{js,ts,jsx,tsx}",
+    "./src/components/**/*.{js,ts,jsx,tsx}",
+    "./src/**/*.{js,ts,jsx,tsx}",
+  ],
   theme: {
     extend: {
-      // === START: 수정된 부분 ===
       animation: {
         "bounce-slow": "bounce 2s infinite",
         wiggle: "wiggle 3s ease-in-out infinite",
@@ -107,7 +110,6 @@ module.exports = {
           },
         },
       },
-      // === END: 수정된 부분 ===
     },
   },
   plugins: [],
@@ -123,5 +125,9 @@ module.exports = {
     "animate-fade-in-up",
     "animate-typing",
     "animate-pulse-glow",
+    "flyAround1",
+    "flyAround2",
+    "flyAround3",
+    "flyAround4",
   ],
 };
