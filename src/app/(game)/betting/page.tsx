@@ -25,7 +25,7 @@ export default function BettingPage() {
   // }, [user, router]);
 
   useEffect(() => {
-    fetch("http://localhost:3001/room")
+    fetch("http://3.34.95.59/room")
       .then((res) => res.json())
       .then((data) => {
         setRoomArr(data);
