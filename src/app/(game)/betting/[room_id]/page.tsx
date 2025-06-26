@@ -16,7 +16,8 @@ export default function RoomDetailPage() {
   //   }, [room_id]);
 
   //   if (!room) return <p>로딩 중…</p>;
-  const socket = io("ws://3.34.9559:3002", {
+
+  const socket = io("ws://3.34.95.59:3002", {
     path: "/socket.io",
     transports: ["websocket"],
   });
