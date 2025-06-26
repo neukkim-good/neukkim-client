@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import "./style.css"; // Import your CSS styles
+import { sendGameResult } from "@/services/applegame-service";
 
 export default function AppleGame() {
   const GRID_COLS = 17;
@@ -17,6 +18,7 @@ export default function AppleGame() {
 
   const splashRef = useRef<HTMLDivElement>(null); // 사과게임 시작 전 화면
   const gridRef = useRef<HTMLDivElement>(null); // 사과게임 판
+  const scoreRef = useRef<number>(0); // 현재 점수, 서버에 정확한 값을 전달하기 위함
   const timerBarRef = useRef<HTMLDivElement>(null); // 타이머 바
   const timeRef = useRef<HTMLDivElement>(null); // 남은 시간 표시
   const timerRef = useRef<NodeJS.Timeout | null>(null); // 타이머
@@ -79,11 +81,12 @@ export default function AppleGame() {
   };
 
   // 게임 종료 함수
-  const endGame = () => {
+  const endGame = useCallback(() => {
     setIsGameRunning(false);
     resultModalRef.current?.classList.remove("hidden"); // 결과 띄우기
-    // 디비에다가 결과 보내는 로직 추가해야 함.
-  };
+    console.log("서버에 보낼 점수: ", scoreRef.current);
+    sendGameResult(scoreRef.current); // 게임 결과 서버에 전송
+  }, []);
 
   // 게임 다시 시작 함수
   const restartGame = () => {
@@ -269,6 +272,10 @@ export default function AppleGame() {
     // 이 함수들은 useCallback으로 감싸져 있는 상태 -> 함수가 변하지 않는 한 마운트 시에 한 번만 리스너 등록
     // useCallback을 사용하지 않으면 새로 그릴 때마다 함수가 매번 새로 생성되어 리스너가 계속 추가되는 문제가 발생할 수 있음
   }, [handleMouseDown, handleMouseMove, handleMouseUp]);
+
+  useEffect(() => {
+    scoreRef.current = score;
+  }, [score]);
 
   return (
     <div id="game-container">

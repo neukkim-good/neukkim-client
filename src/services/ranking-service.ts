@@ -2,7 +2,7 @@
 // ex. fetchTodayRankingData, fetchWeeklyRankingData, etc.
 
 export async function fetchRankingData() {
-  const data = await fetch("http://localhost:3001/ranking")
+  const data = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/ranking`)
     .then((response) => response.json())
     .catch((error) => {
       console.error("Error fetching ranking data:", error);

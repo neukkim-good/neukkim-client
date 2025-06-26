@@ -33,7 +33,7 @@ export default function RoomListPage() {
     });
   };
   useEffect(() => {
-    fetch("http://localhost:3001/room")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/room`)
       .then((res) => res.json())
       .then((data) => {
         setRoomArr(data);
