@@ -2,7 +2,7 @@ export async function sendGameResult(score: number) {
   try {
     const token = sessionStorage.getItem("token");
 
-    const res = await fetch("http://3.34.95.59:3001/apple-game", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/apple-game`, {
       method: "POST",
       headers: {
         "Content-type": "application/json",

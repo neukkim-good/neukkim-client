@@ -16,11 +16,9 @@ export default function Home() {
   const router = useRouter();
   const setUser = useUserStore((s) => s.setUser);
 
-  // const API = process.env.NEXT_PUBLIC_API_BASE_URL; // env 변수
-
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("http://3.34.95.59:3001/users/login", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +53,7 @@ export default function Home() {
       return;
     }
 
-    const res = await fetch("http://3.34.95.59:3001/users/signup", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/signup`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
