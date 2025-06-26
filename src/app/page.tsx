@@ -20,7 +20,7 @@ export default function Home() {
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch("http://3.34.95.59/users/login", {
+    const res = await fetch("http://3.34.95.59:3001/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,7 +55,7 @@ export default function Home() {
       return;
     }
 
-    const res = await fetch("http://3.34.95.59/users/signup", {
+    const res = await fetch("http://3.34.95.59:3001/users/signup", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
