@@ -17,7 +17,7 @@ export default function MainPage() {
             순위보기
           </button>
         </Link>
-        <Link href="/betting">
+        <Link href="/room">
           <button className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition">
             내기
           </button>
