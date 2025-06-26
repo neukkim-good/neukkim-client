@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 
-export default function BettingPage() {
+export default function RoomListPage() {
   const router = useRouter();
   const { user } = useUserStore();
   const [roomArr, setRoomArr] = useState<
@@ -101,7 +101,12 @@ export default function BettingPage() {
 
         {/* 방 만들기 버튼 */}
         <div className="flex justify-center mt-8">
-          <button className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition">
+          <button
+            onClick={() => {
+              router.push("/createRoom");
+            }}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition"
+          >
             <svg
               className="w-5 h-5"
               fill="none"
