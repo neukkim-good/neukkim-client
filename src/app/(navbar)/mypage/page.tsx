@@ -29,7 +29,7 @@ export default function MyPage() {
   const [newNickname, setNewNickname] = useState("");
 
   const user = useUserStore((s) => s.user);
-  const API = process.env.NEXT_PUBLIC_API_BASE_URL;
+  const API = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");

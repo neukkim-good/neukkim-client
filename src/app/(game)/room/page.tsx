@@ -1,36 +1,47 @@
 "use client";
 import { useEffect, useState } from "react";
-// import { useRouter } from "next/navigation";
-// import { useUserStore } from "@/stores/userStore";
+import { useRouter } from "next/navigation";
 
-export default function BettingPage() {
-  // const router = useRouter();
-  // const { user } = useUserStore();
+export default function RoomListPage() {
+  const router = useRouter();
+  const [token, setToken] = useState<string | null>("");
   const [roomArr, setRoomArr] = useState<
     {
       _id: string;
       title: string;
       maxUser: number;
-      host_id: string;
+      host_id: object;
       endTime: Date;
-      board: number[];
+      currentUser: number;
     }[]
   >([]);
-
-  // // 로그인 안되어 있으면 홈으로 이동
-  // useEffect(() => {
-  //   if (user) {
-  //     router.replace("/");
-  //   }
-  // }, [user, router]);
-
+  const enterRoom = function (link: string) {
+    fetch(`http://localhost:3001/room/participate/${link}`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    }).then((res) => {
+      if (res.ok) {
+        if (res.status === 202) {
+          console.log("재입장 했습니다");
+        }
+        router.push(`/room/${link}`);
+      }
+    });
+  };
   useEffect(() => {
-    fetch("http://localhost:3001/room")
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/room`)
       .then((res) => res.json())
       .then((data) => {
         setRoomArr(data);
         console.log(data);
       });
+    // 세션 토큰 가져오기
+    const stored = sessionStorage.getItem("token");
+    setToken(stored);
   }, []);
 
   return (
@@ -53,19 +64,18 @@ export default function BettingPage() {
               {roomArr.map((data, idx) => (
                 <li
                   key={idx}
-                  className="group bg-gray-50 rounded-xl p-6 flex justify-between shadow-sm hover:shadow-md border border-gray-100 hover:border-red-500 transition"
+                  className="group bg-gray-50 rounded-xl p-6 m-3 flex justify-between shadow-sm hover:shadow-md border border-gray-100 hover:border-red-500 transition"
                 >
                   <div>
                     <h3 className="text-lg font-semibold text-gray-800  transition">
                       {data.title}
                     </h3>
                     <p className="text-sm text-gray-400 mt-2">
-                      (1/{data.maxUser})
+                      ({data.currentUser}/{data.maxUser})
                     </p>
                   </div>
                   <div className="flex items-center">
                     <p className="text-gray-500 font-medium mr-3">
-                      ~
                       {(() => {
                         // endTime이 문자열이면 Date 객체로 변환
                         const date =
@@ -73,17 +83,30 @@ export default function BettingPage() {
                             ? new Date(data.endTime)
                             : data.endTime;
                         const kst = new Date(date.getTime());
+
                         // HH:mm 형식으로 출력
-                        return kst.toLocaleTimeString("ko-KR", {
+                        return `~ ${kst.toLocaleTimeString("ko-KR", {
                           hour: "2-digit",
                           minute: "2-digit",
                           hour12: false,
-                        });
+                        })}`;
                       })()}
                     </p>
-                    <button className=" w-20 bg-green-600 hover:bg-green-600 text-white py-2 rounded-lg font-medium transition">
-                      참가하기
-                    </button>
+                    {data.currentUser === data.maxUser ? (
+                      <button
+                        className=" w-20 bg-gray-300 text-white py-2 rounded-lg font-medium transition"
+                        disabled
+                      >
+                        Full
+                      </button>
+                    ) : (
+                      <button
+                        className=" w-20 bg-green-600 hover:bg-red-500 text-white py-2 rounded-lg font-medium transition"
+                        onClick={() => enterRoom(data._id)}
+                      >
+                        참가하기
+                      </button>
+                    )}
                   </div>
                 </li>
               ))}
@@ -101,7 +124,12 @@ export default function BettingPage() {
 
         {/* 방 만들기 버튼 */}
         <div className="flex justify-center mt-8">
-          <button className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition">
+          <button
+            onClick={() => {
+              router.push("/createRoom");
+            }}
+            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition"
+          >
             <svg
               className="w-5 h-5"
               fill="none"
