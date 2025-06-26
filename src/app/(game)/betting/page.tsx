@@ -1,11 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/stores/userStore";
+// import { useRouter } from "next/navigation";
+// import { useUserStore } from "@/stores/userStore";
 
 export default function BettingPage() {
-  const router = useRouter();
-  const { user } = useUserStore();
+  // const router = useRouter();
+  // const { user } = useUserStore();
   const [roomArr, setRoomArr] = useState<
     {
       _id: string;
@@ -17,12 +17,12 @@ export default function BettingPage() {
     }[]
   >([]);
 
-  // 로그인 안되어 있으면 홈으로 이동
-  useEffect(() => {
-    if (user) {
-      router.replace("/");
-    }
-  }, [user, router]);
+  // // 로그인 안되어 있으면 홈으로 이동
+  // useEffect(() => {
+  //   if (user) {
+  //     router.replace("/");
+  //   }
+  // }, [user, router]);
 
   useEffect(() => {
     fetch("http://localhost:3001/room")
