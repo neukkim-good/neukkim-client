@@ -17,12 +17,12 @@ export default function RoomListPage() {
     }[]
   >([]);
 
-  // 로그인 안되어 있으면 홈으로 이동
-  useEffect(() => {
-    if (user) {
-      router.replace("/");
-    }
-  }, [user, router]);
+  // // 로그인 안되어 있으면 홈으로 이동
+  // useEffect(() => {
+  //   if (user) {
+  //     router.replace("/");
+  //   }
+  // }, [user, router]);
 
   useEffect(() => {
     fetch("http://localhost:3001/room")
