@@ -24,7 +24,7 @@ export default function Home() {
     // 3. 2초 후에 로딩 상태를 false로 변경
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 2000);
+    }, 200000);
 
     // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
     return () => clearTimeout(timer);
