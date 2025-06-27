@@ -37,9 +37,10 @@ export default function RoomDetailPage() {
       );
   }, [room_id]);
 
+  const token = sessionStorage.getItem("token");
   // if (room) console.log("사과게임 판: ", room?.board);
 
-  const socket = io("ws://3.34.95.59:3002", {
+  const socket = io(`ws://localhost:3002`, {
     path: "/socket.io",
     transports: ["websocket"],
   });
@@ -47,7 +48,7 @@ export default function RoomDetailPage() {
     // console.log("Socket connected:", socket.id);
   });
   const sendMessage = (message: string) => {
-    socket.emit("message", { room_id, message });
+    socket.emit("message", { room_id, message, token, socket_id: socket.id });
   };
 
   return (
