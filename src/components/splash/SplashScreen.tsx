@@ -96,7 +96,7 @@ const SplashScreen = () => {
           <div className="absolute -inset-4 animate-pulse-glow rounded-full"></div>
           <div className="relative w-40 h-40 animate-wiggle">
             <Image
-              src="/splash-apple.png"
+              src="/logo_3.png"
               alt="사과 게임 로고"
               width={160}
               height={160}
