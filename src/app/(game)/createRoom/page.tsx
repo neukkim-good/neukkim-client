@@ -38,7 +38,7 @@ export default function CreateRoomPage() {
     console.log(payload);
     console.log(token);
 
-    await fetch("http://localhost:3001/room", {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room`, {
       method: "POST",
       credentials: "include",
       headers: {
