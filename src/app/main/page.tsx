@@ -7,7 +7,7 @@ export default function MainPage() {
         <h1 className="text-4xl font-bold text-gray-800">🍏사과사과🍎</h1>
       </header>
       <main>
-        <Link href="/select-game">
+        <Link href="/apple-game">
           <button className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition">
             게임 시작하기
           </button>
