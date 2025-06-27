@@ -3,8 +3,9 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import "../style.css"; // Import your CSS styles
-import { sendGameResult } from "@/services/applegame-service";
+import { sendBettingResult } from "@/services/applegame-service";
 import {
   createGridWithValues,
   getSelectionBoxCoords,
@@ -12,7 +13,13 @@ import {
 } from "../appleGameLogic";
 
 export default function AppleGameBetting() {
-  const TOTAL_TIME = 120; // 디버깅을 위해 10초로 설정
+  const TOTAL_TIME = 10; // 디버깅을 위해 10초로 설정
+
+  const searchParams = useSearchParams();
+  const boardStr = searchParams.get("board");
+  const room_id = searchParams.get("room_id");
+
+  const board = boardStr ? JSON.parse(boardStr) : null;
 
   const [score, setScore] = useState(0);
   const [isGameRunning, setIsGameRunning] = useState(false);
@@ -57,9 +64,11 @@ export default function AppleGameBetting() {
   const startGame = () => {
     setScore(0);
     setIsGameRunning(true);
-    if (gridRef.current) {
-      const values = Array(170).fill(5); // 170개 모두 5로 채운 배열
-      createGridWithValues(gridRef.current, values); // 배열을 전달해서 grid 생성
+    if (gridRef.current && board) {
+      createGridWithValues(gridRef.current, board); // 배열을 전달해서 grid 생성
+    } else {
+      alert("게임을 시작할 수 없습니다.");
+      return;
     }
     splashRef.current?.classList.add("hidden"); // 스플래쉬 화면 숨기기
     timerContainerRef.current?.classList.remove("hidden"); // 타이머 컨테이너 보이기
@@ -71,8 +80,12 @@ export default function AppleGameBetting() {
     setIsGameRunning(false);
     resultModalRef.current?.classList.remove("hidden"); // 결과 띄우기
     console.log("서버에 보낼 점수: ", scoreRef.current);
-    sendGameResult(scoreRef.current); // 게임 결과 서버에 전송
-  }, []);
+    if (!room_id) {
+      console.error("room_id가 없습니다.");
+      return;
+    }
+    sendBettingResult(scoreRef.current, room_id); // 게임 결과 서버에 전송
+  }, [room_id]);
 
   // 드래그 박스 CSS 스타일 업데이트
   const updateSelectionBoxStyle = () => {

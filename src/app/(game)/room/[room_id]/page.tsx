@@ -1,12 +1,14 @@
 "use client";
 // import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { RoomDetail } from "@/types/api/RoomDetail";
 import { fetchRoomDetail } from "@/services/room-service";
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
 export default function RoomDetailPage() {
+  const router = useRouter();
   const { room_id } = useParams<{ room_id: string }>();
   // const [room, setRoom] = useState<Room | null>(null);
 
@@ -98,7 +100,20 @@ export default function RoomDetailPage() {
         >
           소켓 통신 테스트 버튼입니둥
         </button>
-        <button className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition">
+        <button
+          className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+          onClick={() => {
+            const board = room?.board;
+            if (!board || !room_id) return alert("게임을 시작할 수 없습니다.");
+
+            const query = new URLSearchParams({
+              room_id,
+              board: JSON.stringify(board),
+            }).toString();
+
+            router.replace(`/apple-game-betting?${query}`);
+          }}
+        >
           게임 시작하기
         </button>
         <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
