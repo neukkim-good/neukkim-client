@@ -16,7 +16,7 @@ export default function RoomListPage() {
     }[]
   >([]);
   const enterRoom = function (link: string) {
-    fetch(`http://localhost:3001/room/participate/${link}`, {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/participate/${link}`, {
       method: "POST",
       credentials: "include",
       headers: {
