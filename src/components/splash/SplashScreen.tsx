@@ -48,8 +48,8 @@ const SplashScreen = () => {
         left: `${Math.random() * 100}vw`,
         top: `${Math.random() * 100}vh`,
         size: Math.random() * 1.7 + 0.6, // 0.6rem ~ 2.3rem
-        delay: `${Math.random() * 10}s`,
-        duration: `${12 + Math.random() * 13}s`,
+        delay: `${Math.random() * 1}s`,
+        duration: `${5 + Math.random() * 7}s`,
         animationName,
       };
     });
@@ -96,7 +96,7 @@ const SplashScreen = () => {
           <div className="absolute -inset-4 animate-pulse-glow rounded-full"></div>
           <div className="relative w-40 h-40 animate-wiggle">
             <Image
-              src="/splash-apple.png"
+              src="/logo_3.png"
               alt="사과 게임 로고"
               width={160}
               height={160}
@@ -107,7 +107,7 @@ const SplashScreen = () => {
 
         {/* 타이틀과 서브타이틀 */}
         <div className="mb-12">
-          <h1 className="text-6xl font-extrabold mb-3 bg-gradient-to-r from-red-600 via-pink-500 to-orange-500 bg-clip-text text-transparent [background-size:200%_auto] animate-text-shimmer animate-fade-in-up">
+          <h1 className="text-6xl font-extrabold mb-3 bg-gradient-to-r from-red-600 via-yellow-500 to-green-500 bg-clip-text text-transparent [background-size:200%_auto] animate-text-shimmer animate-fade-in-up">
             사과 게임
           </h1>
           <div className="flex justify-center items-center">

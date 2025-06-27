@@ -62,11 +62,11 @@ module.exports = {
         pulseGlow: {
           "from, to": {
             transform: "scale(1)",
-            "box-shadow": "0 0 0 0 rgba(239, 68, 68, 0.7)",
+            "box-shadow": "0 0 0 0 rgba(0, 255, 0, 0.7)",
           },
           "50%": {
             transform: "scale(1.05)",
-            "box-shadow": "0 0 40px 20px rgba(239, 68, 68, 0)",
+            "box-shadow": "0 0 40px 20px rgba(0, 255, 0, 0)",
           },
         },
         flyAround1: {

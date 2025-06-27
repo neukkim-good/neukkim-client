@@ -57,7 +57,7 @@ export default function CreateRoomPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center  py-12 px-4">
+    <div className="min-h-screen flex flex-col items-center  py-12 px-4">
       <main className="flex flex-col items-center bg-white rounded-2xl shadow-lg border border-gray-200 p-8 min-h-[280px]">
         <p className="mb-2 text-lg font-bold text-gray-700">방 제목</p>
         <input
