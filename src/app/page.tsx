@@ -1,7 +1,8 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
+import SplashScreen from "@/components/splash/SplashScreen";
 
 export default function Home() {
   const [isLogin, setIsLogin] = useState(true);
@@ -16,9 +17,27 @@ export default function Home() {
   const router = useRouter();
   const setUser = useUserStore((s) => s.setUser);
 
+  // const API = process.env.NEXT_PUBLIC_API_BASE_URL; // env 변수
+  const [loading, setLoading] = useState(true); // 2. 로딩 상태 추가
+
+  useEffect(() => {
+    // 3. 2초 후에 로딩 상태를 false로 변경
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
+    return () => clearTimeout(timer);
+  }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행되도록 합니다.
+
+  // 4. 로딩 상태가 true이면 SplashScreen을 보여줍니다.
+  if (loading) {
+    return <SplashScreen />;
+  }
+
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/login`, {
+    const res = await fetch("http://localhost:3001/users/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
