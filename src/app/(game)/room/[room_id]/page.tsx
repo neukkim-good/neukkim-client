@@ -1,7 +1,9 @@
 "use client";
 // import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-// import { Room } from "@/types/api/Room";
+import { RoomDetail } from "@/types/api/RoomDetail";
+import { fetchRoomDetail } from "@/services/room-service";
+import { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 
 export default function RoomDetailPage() {
@@ -17,12 +19,32 @@ export default function RoomDetailPage() {
 
   //   if (!room) return <p>로딩 중…</p>;
 
+  const [room, setRoom] = useState<RoomDetail | null>(null);
+
+  useEffect(() => {
+    if (!room_id) return;
+
+    const token = sessionStorage.getItem("token");
+    if (!token) return;
+
+    fetchRoomDetail(room_id, token)
+      .then((data) => {
+        setRoom(data);
+        // console.log("방 정보:", data);
+      })
+      .catch((err) =>
+        alert("방 정보를 불러오는 데 실패했습니다: " + err.message)
+      );
+  }, [room_id]);
+
+  // if (room) console.log("사과게임 판: ", room?.board);
+
   const socket = io("ws://3.34.95.59:3002", {
     path: "/socket.io",
     transports: ["websocket"],
   });
   socket.on("connect", () => {
-    console.log("Socket connected:", socket.id);
+    // console.log("Socket connected:", socket.id);
   });
   const sendMessage = (message: string) => {
     socket.emit("message", { room_id, message });
@@ -31,7 +53,16 @@ export default function RoomDetailPage() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-50">
       <header className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800">내기 상세 페이지</h1>
+        <h1 className="text-4xl font-bold text-gray-800">
+          방 제목: {room?.title}
+        </h1>
+        {room && (
+          <div className="mt-2 text-gray-700 text-sm">
+            {room.is_host && (
+              <span className="ml-2 text-green-600 font-bold">(방장)</span>
+            )}
+          </div>
+        )}
       </header>
       <main className="flex flex-col items-center justify-center">
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
@@ -42,6 +73,9 @@ export default function RoomDetailPage() {
           onClick={() => sendMessage("소켓 통신 테스트")}
         >
           소켓 통신 테스트 버튼입니둥
+        </button>
+        <button className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition">
+          게임 시작하기
         </button>
         <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
           <table className="min-w-[300px] table-auto border-collapse">
@@ -56,28 +90,26 @@ export default function RoomDetailPage() {
               </tr>
             </thead>
             <tbody>
-              {[
-                { name: "유저A", status: "Ready" },
-                { name: "유저B", status: "Not Ready" },
-              ].map((user, idx) => (
-                <tr
-                  key={user.name}
-                  className={`border-t ${
-                    idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } hover:bg-gray-100 transition`}
-                >
-                  <td className="px-4 py-3 text-gray-800">{user.name}</td>
-                  <td
-                    className={`px-4 py-3 ${
-                      user.status === "Ready"
-                        ? "text-green-600 font-bold"
-                        : "text-red-600"
-                    }`}
+              {room &&
+                room.user_list.map((nickname, idx) => (
+                  <tr
+                    key={nickname}
+                    className={`border-t ${
+                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } hover:bg-gray-100 transition`}
                   >
-                    {user.status}
-                  </td>
-                </tr>
-              ))}
+                    <td className="px-4 py-3 text-gray-800">{nickname}</td>
+                    <td
+                      className={`px-4 py-3 ${
+                        idx % 2 === 0
+                          ? "text-green-600 font-bold"
+                          : "text-red-600"
+                      }`}
+                    >
+                      {idx % 2 === 0 ? "Ready" : "Not Ready"}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>
