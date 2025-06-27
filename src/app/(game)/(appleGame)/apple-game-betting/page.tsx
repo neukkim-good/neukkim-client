@@ -11,12 +11,11 @@ import {
   getSelectedApples,
 } from "../appleGameLogic";
 
-export default function AppleGame() {
+export default function AppleGameBetting() {
   const TOTAL_TIME = 120; // 디버깅을 위해 10초로 설정
 
   const [score, setScore] = useState(0);
   const [isGameRunning, setIsGameRunning] = useState(false);
-  const [remainingTime, setRemainingTime] = useState(TOTAL_TIME);
   const [isDragging, setIsDragging] = useState(false);
 
   const splashRef = useRef<HTMLDivElement>(null); // 사과게임 시작 전 화면
@@ -33,23 +32,25 @@ export default function AppleGame() {
 
   // 타이머 시작 함수
   const startTimer = () => {
-    setRemainingTime(TOTAL_TIME);
     if (timerBarRef.current) timerBarRef.current.style.width = "100%"; // 타이머 바 초기화
     if (timeRef.current) timeRef.current.textContent = TOTAL_TIME.toString();
 
+    let remainingTime = TOTAL_TIME;
+
     timerRef.current = setInterval(() => {
-      setRemainingTime((prev) => {
-        const next = prev - 1; // 남은 시간 감소
-        if (timeRef.current) timeRef.current.textContent = next.toString(); // 남은 시간 업데이트
-        if (timerBarRef.current)
-          timerBarRef.current.style.width = `${(next / TOTAL_TIME) * 100}%`; // 타이머 바 업데이트
-        if (next <= 0 && timerRef.current) {
-          clearInterval(timerRef.current); // 타이머 정지하고
-          endGame(); // 게임 종료 함수 호출
-        }
-        return next;
-      });
-    }, 1000);
+      remainingTime -= 1; // 남은 시간 감소
+      if (timeRef.current)
+        timeRef.current.textContent = remainingTime.toString(); // 남은 시간 업데이트
+      if (timerBarRef.current)
+        timerBarRef.current.style.width = `${
+          (remainingTime / TOTAL_TIME) * 100
+        }%`; // 타이머 바 업데이트
+
+      if (remainingTime <= 0 && timerRef.current) {
+        clearInterval(timerRef.current); // 타이머 정지
+        endGame(); // 게임 종료 함수 호출
+      }
+    }, 1000); // 1초마다 실행
   };
 
   // 게임 시작 함수
