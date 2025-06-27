@@ -20,6 +20,8 @@ export default function RoomDetailPage() {
   //   if (!room) return <p>로딩 중…</p>;
 
   const [room, setRoom] = useState<RoomDetail | null>(null);
+  const [token, setToken] = useState<string | null>(null);
+  const [socketId, setSocketId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!room_id) return;
@@ -37,17 +39,20 @@ export default function RoomDetailPage() {
       );
   }, [room_id]);
 
+  useEffect(() => {
+    setToken(sessionStorage.getItem("token"));
+  });
   // if (room) console.log("사과게임 판: ", room?.board);
 
-  const socket = io("ws://3.34.95.59:3002", {
+  const socket = io(`ws://${process.env.NEXT_PUBLIC_WS_URL}:3002`, {
     path: "/socket.io",
     transports: ["websocket"],
   });
   socket.on("connect", () => {
-    // console.log("Socket connected:", socket.id);
+    setSocketId(socket.id ? socket.id : null);
   });
   const sendMessage = (message: string) => {
-    socket.emit("message", { room_id, message });
+    socket.emit("message", { room_id, message, token, socket_id: socket.id });
   };
 
   return (
