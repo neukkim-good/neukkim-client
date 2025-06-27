@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Navbar from "@/components/layouts/Navbar/Navbar";
 import AuthProvider from "./providers/AuthProvider";
+import AnimatedBackground from "@/components/layouts/AnimatedBackground";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -31,8 +32,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <AuthProvider>
-          <Navbar />
-          {children}
+          {/* 2. 배경 컴포넌트를 여기에 렌더링합니다. */}
+          <AnimatedBackground />
+
+          {/* 3. 모든 페이지 콘텐츠를 z-10을 가진 컨테이너로 감싸서 배경 위에 오도록 합니다. */}
+          <div className="relative z-10 flex min-h-screen flex-col">
+            <Navbar />
+            {/* 페이지 콘텐츠가 이 main 태그 안에 렌더링됩니다. */}
+            <main className="flex-grow">{children}</main>
+          </div>
         </AuthProvider>
       </body>
     </html>

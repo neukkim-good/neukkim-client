@@ -45,7 +45,7 @@ export default function RoomListPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-12 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4">
       <main className="w-full max-w-4xl">
         {/* 헤더 */}
         <div className="text-center mb-10">

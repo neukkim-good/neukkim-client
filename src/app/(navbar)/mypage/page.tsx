@@ -1,10 +1,22 @@
 "use client";
-import { useState, useEffect } from "react"; // useEffect를 import 해야 합니다.
+import { useState, useEffect, useMemo } from "react"; // useEffect를 import 해야 합니다.
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import { User } from "@/types/api/User";
 import { Record as MyRecord } from "@/types/api/Record"; // Record 타입을 정의한 파일을 import 합니다.
 import { GameResult as MyGameResult } from "@/types/api/GameResult";
+import Image from "next/image";
+import { Apple } from "lucide-react";
+// 파티클 데이터 타입을 정의합니다.
+interface Particle {
+  id: number;
+  left: string;
+  top: string;
+  size: number;
+  delay: string;
+  duration: string;
+  animationName: string; // 애니메이션 클래스 이름을 저장할 속성
+}
 
 interface RecordList {
   records: MyRecord[];
@@ -15,6 +27,48 @@ interface GameResultList {
 }
 
 export default function MyPage() {
+  const [particles, setParticles] = useState<Particle[]>([]);
+  // 다양한 애니메이션 클래스 조합
+  const animations = useMemo(
+    () => [
+      "animate-fly-1",
+      "animate-fly-2",
+      "animate-fly-3",
+      "animate-fly-4",
+      "animate-spin-slow",
+      "animate-scale-bounce",
+      "animate-hue-rotate",
+      "animate-opacity-pulse",
+      "animate-float",
+      "animate-wiggle",
+    ],
+    []
+  );
+
+  useEffect(() => {
+    // 사과 개수를 40개로 증가, 애니메이션 조합 적용
+    const newParticles = [...Array(40)].map((_, i) => {
+      // 2~3개의 애니메이션을 랜덤 조합
+      const animCount = 2 + Math.floor(Math.random() * 2);
+      const randomAnimations = Array.from(
+        { length: animCount },
+        () => animations[Math.floor(Math.random() * animations.length)]
+      );
+      const animationName = randomAnimations.join(" ");
+      return {
+        id: i,
+        left: `${Math.random() * 100}vw`,
+        top: `${Math.random() * 100}vh`,
+        size: Math.random() * 1.7 + 0.6, // 0.6rem ~ 2.3rem
+        delay: `${Math.random() * 1}s`,
+        // [수정] 애니메이션 동작시간 단축 (5~12초)
+        duration: `${5 + Math.random() * 7}s`,
+        animationName,
+      };
+    });
+    setParticles(newParticles);
+  }, [animations]);
+
   const [nickname, setNickname] = useState("");
   const [isNicknameLoading, setIsNicknameLoading] = useState(true);
   const [isRecordsVisible, setIsRecordsVisible] = useState(false);
@@ -299,151 +353,187 @@ export default function MyPage() {
       hour12: false,
     });
   };
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center py-12 px-4">
-      <main className="w-full max-w-4xl">
-        {/* 헤더 */}
-        <div className="text-center mb-10">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
-            🍏기록 페이지🍎
-          </h1>
-          <p className="text-gray-500">기록을 확인해보세요!</p>
+    // 1. 전체를 감싸는 부모 컨테이너에 relative 속성 추가
+    <div className="relative min-h-screen overflow-hidden">
+      {/* 2. 배경 애니메이션 컨테이너. absolute로 화면 전체를 채우고 z-0으로 맨 뒤로 보냄 */}
+      <div className="absolute inset-0 z-0 bg-gradient-to-br from-red-50 via-green-50 to-yellow-50">
+        <div className="absolute inset-0 pointer-events-none">
+          {particles.map((p) => (
+            <div
+              key={p.id}
+              className={`absolute ${p.animationName}`}
+              style={{
+                left: p.left,
+                top: p.top,
+                width: `${p.size}rem`,
+                height: `${p.size}rem`,
+                animationDelay: p.delay,
+                animationDuration: p.duration,
+                filter: `blur(${Math.random() * 1.2}px)`,
+              }}
+            >
+              <Apple
+                className="w-full h-full"
+                style={{
+                  color: `hsl(${Math.floor(Math.random() * 360)}, 80%, 70%)`,
+                  opacity: 0.35 + Math.random() * 0.5,
+                  filter: `drop-shadow(0 0 6px hsl(${Math.floor(
+                    Math.random() * 360
+                  )}, 90%, 80%))`,
+                }}
+              />
+            </div>
+          ))}
         </div>
-        <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
-          {/* ===== 기록 섹션 ===== */}
-          <div className="flex justify-between items-center border-gray-200 pb-3">
-            <span className="text-black text-2xl font-semibold">
-              오늘 최고 기록: {todayMaxScoreLoading ? "" : todayHighScore}
-            </span>
-            <span className="text-black text-2xl font-semibold">
-              최근 7일 최고 기록: {weeklyScoreLoading ? "" : weeklyHighScore}
-            </span>
-            <span className="text-black text-2xl font-semibold">
-              최근 7일 평균 기록: {weeklyScoreLoading ? "" : weeklyAverScore}
-            </span>
+      </div>
+
+      {/* 3. 실제 페이지 콘텐츠. relative와 z-10으로 배경 위에 위치하도록 설정 */}
+      <div className="relative z-10 flex min-h-screen flex-col items-center py-12 px-4">
+        <main className="w-full max-w-4xl">
+          {/* 헤더 */}
+          <div className="text-center mb-10">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
+              🍏기록 페이지🍎
+            </h1>
+            <p className="text-gray-500">기록을 확인해보세요!</p>
           </div>
-          {/* ===== 닉네임 섹션 ===== */}
-          <div className="flex justify-between items-center p-3 border-t pt-3">
-            <div className="flex items-center space-x-4 border-gray-200 pb-1">
-              <span className="text-gray-600 font-semibold">내 닉네임:</span>
-              {isEditing ? (
-                <input
-                  className="text-gray-600 font-bold text-lg"
-                  value={newNickname}
-                  onChange={(e) => setNewNickname(e.target.value)}
-                ></input>
-              ) : (
-                <span className="text-blue-600 font-bold text-lg">
-                  {isNicknameLoading ? "" : nickname}
-                </span>
-              )}
+
+          {/* 4. 메인 콘텐츠 카드에 반투명 배경과 블러 효과 추가 */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-8">
+            {/* ===== 기록 섹션 ===== */}
+            <div className="flex justify-between items-center border-gray-200 pb-3">
+              <span className="text-black text-2xl font-semibold">
+                오늘 최고 기록: {todayMaxScoreLoading ? "" : todayHighScore}
+              </span>
+              <span className="text-black text-2xl font-semibold">
+                최근 7일 최고 기록: {weeklyScoreLoading ? "" : weeklyHighScore}
+              </span>
+              <span className="text-black text-2xl font-semibold">
+                최근 7일 평균 기록: {weeklyScoreLoading ? "" : weeklyAverScore}
+              </span>
+            </div>
+            {/* ===== 닉네임 섹션 ===== */}
+            <div className="flex justify-between items-center p-3 border-t pt-3">
+              <div className="flex items-center space-x-4 border-gray-200 pb-1">
+                <span className="text-gray-600 font-semibold">내 닉네임:</span>
+                {isEditing ? (
+                  <input
+                    className="text-gray-600 font-bold text-lg"
+                    value={newNickname}
+                    onChange={(e) => setNewNickname(e.target.value)}
+                  ></input>
+                ) : (
+                  <span className="text-blue-600 font-bold text-lg">
+                    {isNicknameLoading ? "" : nickname}
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={handleNicknameButtonClick}
+                className="ml-4 text-white bg-blue-600 hover:bg-blue-700 font-semibold py-2 px-4 rounded-md transition-colors"
+              >
+                {isEditing ? "저장" : "닉네임 변경"}
+              </button>
             </div>
 
-            <button
-              onClick={handleNicknameButtonClick}
-              className="ml-4 text-white bg-blue-600 hover:bg-blue-700 font-semibold py-2 px-4 rounded-md transition-colors"
-            >
-              {isEditing ? "저장" : "닉네임 변경"}
-            </button>
-          </div>
-
-          {/* ===== 내 기록 보기 섹션 ===== */}
-          <div className="border-t pt-4">
-            <button
-              onClick={handleToggleRecordsClick}
-              className="w-full text-center text-gray-700 text-2xl hover:bg-gray-100 p-3 rounded-md transition-colors"
-            >
-              {isRecordsVisible ? "기록 접기" : "기록 보기"}
-            </button>
-            {isRecordsVisible && (
-              <div className="mt-4 p-4 border rounded-lg bg-gray-50 min-h-[200px]">
-                {error && <p className="text-red-500 mb-4">{error}</p>}
-                <div className="flex flex-col md:flex-row justify-between md:space-x-6">
-                  {/* ===== 왼쪽 컬럼: 개인 기록 ===== */}
-                  <div className="w-full md:w-1/2 mb-6 md:mb-0">
-                    <h3 className="text-2xl text-black text-center font-semibold mb-3 pb-2 border-b">
-                      🕹️개인 기록
-                    </h3>
-                    <div className="space-y-2">
-                      {isRecordsLoading ? (
-                        <p>개인 기록을 불러오는 중입니다...</p>
-                      ) : records.length > 0 ? (
-                        records.map((record) => (
-                          <div
-                            key={record.record_id}
-                            className="flex justify-between items-center p-2"
-                          >
-                            <span className="text-sm text-gray-500">
-                              {formatDateTime(record.time)}
-                            </span>
-                            <span className="text-md font-semibold text-gray-800">
-                              {record.score}점
-                            </span>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-gray-500">
-                          표시할 개인 기록이 없습니다.
-                        </p>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* ===== 오른쪽 컬럼: 내기 기록 ===== */}
-                  <div className="w-full md:w-1/2">
-                    <h3 className="text-2xl text-red-500 text-center font-semibold mb-3 pb-2 border-b">
-                      🎮내기 기록
-                    </h3>
-                    <div className="space-y-3">
-                      {isGameResultLoading ? (
-                        <p>내기 기록을 불러오는 중입니다...</p>
-                      ) : gameResult.length > 0 ? (
-                        [...gameResult]
-                          .sort(
-                            (a, b) =>
-                              new Date(b.endTime).getTime() -
-                              new Date(a.endTime).getTime()
-                          )
-                          .map((result) => (
+            {/* ===== 내 기록 보기 섹션 ===== */}
+            <div className="border-t pt-4">
+              <button
+                onClick={handleToggleRecordsClick}
+                className="w-full text-center text-gray-700 text-2xl hover:bg-gray-100 p-3 rounded-md transition-colors"
+              >
+                {isRecordsVisible ? "기록 접기" : "기록 보기"}
+              </button>
+              {isRecordsVisible && (
+                <div className="mt-4 p-4 border rounded-lg bg-gray-50/80 min-h-[200px]">
+                  {error && <p className="text-red-500 mb-4">{error}</p>}
+                  <div className="flex flex-col md:flex-row justify-between md:space-x-6">
+                    {/* ===== 왼쪽 컬럼: 개인 기록 ===== */}
+                    <div className="w-full md:w-1/2 mb-6 md:mb-0">
+                      <h3 className="text-2xl text-black text-center font-semibold mb-3 pb-2 border-b">
+                        🕹️개인 기록
+                      </h3>
+                      <div className="space-y-2">
+                        {isRecordsLoading ? (
+                          <p>개인 기록을 불러오는 중입니다...</p>
+                        ) : records.length > 0 ? (
+                          records.map((record) => (
                             <div
-                              key={result.room_id}
-                              className="p-2 border-b last:border-b-0"
+                              key={record.record_id}
+                              className="flex justify-between items-center p-2"
                             >
-                              <div className="flex justify-between items-center text-sm text-gray-500 mb-1">
-                                <span>{formatDateTime(result.endTime)}</span>
-                                <span>
-                                  멤버: ({result.totalParticipants}명)
-                                </span>
-                              </div>
-                              <div className="flex justify-between items-baseline">
-                                <p className="font-bold text-gray-800 truncate pr-2">
-                                  {result.title}
-                                </p>
-                                <div className="flex items-baseline space-x-2 flex-shrink-0">
-                                  <span className="text-sm text-gray-600">
-                                    {result.myRank}등
-                                  </span>
-                                  <span className="text-md font-semibold text-blue-600">
-                                    {result.myScore}점
-                                  </span>
-                                </div>
-                              </div>
+                              <span className="text-sm text-gray-500">
+                                {formatDateTime(record.time)}
+                              </span>
+                              <span className="text-md font-semibold text-gray-800">
+                                {record.score}점
+                              </span>
                             </div>
                           ))
-                      ) : (
-                        <p className="text-gray-500">
-                          표시할 내기 기록이 없습니다.
-                        </p>
-                      )}
+                        ) : (
+                          <p className="text-gray-500">
+                            표시할 개인 기록이 없습니다.
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* ===== 오른쪽 컬럼: 내기 기록 ===== */}
+                    <div className="w-full md:w-1/2">
+                      <h3 className="text-2xl text-red-500 text-center font-semibold mb-3 pb-2 border-b">
+                        🎮내기 기록
+                      </h3>
+                      <div className="space-y-3">
+                        {isGameResultLoading ? (
+                          <p>내기 기록을 불러오는 중입니다...</p>
+                        ) : gameResult.length > 0 ? (
+                          [...gameResult]
+                            .sort(
+                              (a, b) =>
+                                new Date(b.endTime).getTime() -
+                                new Date(a.endTime).getTime()
+                            )
+                            .map((result) => (
+                              <div
+                                key={result.room_id}
+                                className="p-2 border-b last:border-b-0"
+                              >
+                                <div className="flex justify-between items-center text-sm text-gray-500 mb-1">
+                                  <span>{formatDateTime(result.endTime)}</span>
+                                  <span>
+                                    멤버: ({result.totalParticipants}명)
+                                  </span>
+                                </div>
+                                <div className="flex justify-between items-baseline">
+                                  <p className="font-bold text-gray-800 truncate pr-2">
+                                    {result.title}
+                                  </p>
+                                  <div className="flex items-baseline space-x-2 flex-shrink-0">
+                                    <span className="text-sm text-gray-600">
+                                      {result.myRank}등
+                                    </span>
+                                    <span className="text-md font-semibold text-blue-600">
+                                      {result.myScore}점
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                        ) : (
+                          <p className="text-gray-500">
+                            표시할 내기 기록이 없습니다.
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }
