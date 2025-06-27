@@ -3,8 +3,8 @@
 import { useParams } from "next/navigation";
 import { RoomDetail } from "@/types/api/RoomDetail";
 import { fetchRoomDetail } from "@/services/room-service";
-import { useState, useEffect } from "react";
-import { io } from "socket.io-client";
+import { useState, useEffect, useRef } from "react";
+import { io, Socket } from "socket.io-client";
 
 export default function RoomDetailPage() {
   const { room_id } = useParams<{ room_id: string }>();
@@ -20,8 +20,7 @@ export default function RoomDetailPage() {
   //   if (!room) return <p>로딩 중…</p>;
 
   const [room, setRoom] = useState<RoomDetail | null>(null);
-  const [token, setToken] = useState<string | null>(null);
-  const [socketId, setSocketId] = useState<string | null>(null);
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     if (!room_id) return;
@@ -39,20 +38,40 @@ export default function RoomDetailPage() {
       );
   }, [room_id]);
 
+  // 소켓 연결을 한 번만 설정
   useEffect(() => {
-    setToken(sessionStorage.getItem("token"));
-  });
-  // if (room) console.log("사과게임 판: ", room?.board);
+    const token = sessionStorage.getItem("token");
+    if (!room_id || !token) return;
 
-  const socket = io(`ws://${process.env.NEXT_PUBLIC_WS_URL}:3002`, {
-    path: "/socket.io",
-    transports: ["websocket"],
-  });
-  socket.on("connect", () => {
-    setSocketId(socket.id ? socket.id : null);
-  });
+    const socket = io(`ws://${process.env.NEXT_PUBLIC_WS_URL}`, {
+      path: "/socket.io",
+      transports: ["websocket"],
+    });
+
+    socketRef.current = socket;
+
+    socket.on("connect", () => {
+      console.log("Socket connected:", socket.id);
+    });
+
+    // 방에 join 요청 등 초기 작업 가능
+
+    return () => {
+      socket.disconnect();
+      console.log("Socket disconnected");
+    };
+  }, [room_id]);
+
   const sendMessage = (message: string) => {
-    socket.emit("message", { room_id, message, token, socket_id: socket.id });
+    const token = sessionStorage.getItem("token");
+    if (!token || !socketRef.current) return;
+
+    socketRef.current.emit("message", {
+      room_id,
+      message,
+      token,
+      socket_id: socketRef.current.id,
+    });
   };
 
   return (
