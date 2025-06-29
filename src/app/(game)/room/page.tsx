@@ -16,25 +16,9 @@ export default function RoomListPage() {
     }[]
   >([]);
   const enterRoom = function (link: string) {
-<<<<<<< HEAD
     fetchParticipantData(link).then((data) => {
       if (data !== null) {
         router.push(`/room/${data}`);
-=======
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/participate/${link}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    }).then((res) => {
-      if (res.ok) {
-        if (res.status === 202) {
-          console.log("재입장 했습니다");
-        }
-        router.push(`/room/${link}`);
->>>>>>> main
       }
     });
   };
