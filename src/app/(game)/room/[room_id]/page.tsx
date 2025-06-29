@@ -64,6 +64,15 @@ export default function RoomDetailPage() {
     };
   }, [room_id]);
 
+  useEffect(() => {
+    if (!socketRef.current) return;
+
+    socketRef.current.on("user_joined", (data) => {
+      console.log("누군가 들어왔습니다:", data.user_id);
+      // 요기 화면에 사용자 정보 보여주면 됨!!!
+    });
+  }, []);
+
   const sendMessage = (message: string) => {
     const token = sessionStorage.getItem("token");
     if (!token || !socketRef.current) return;
