@@ -6,7 +6,7 @@ export default function RankingPage() {
   const [dayRank, setDayRank] = useState([]);
   const [weekRank, setWeekRank] = useState([]);
   const [meanRank, setMeanRank] = useState([]);
-
+  const [winRateRank, setWinRateRank] = useState([]);
   // ranking
   useEffect(() => {
     async function getData() {
@@ -15,13 +15,14 @@ export default function RankingPage() {
         setDayRank(data.dayRank);
         setWeekRank(data.weekRank);
         setMeanRank(data.meanRank);
+        setWinRateRank(data.winRateRankArray);
       });
     }
     getData();
   }, []);
 
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] bg-gray-50">
+    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="text-center">
         <h1 className="text-4xl font-bold text-gray-800">🍏순위 페이지🍎</h1>
       </header>
@@ -36,6 +37,11 @@ export default function RankingPage() {
           title="📊 평균 점수 순위"
           rankData={meanRank}
           field="mean"
+        />
+        <RankingList
+          title="📊 승률 순위"
+          rankData={winRateRank}
+          field="score"
         />
       </main>
     </div>
@@ -56,12 +62,13 @@ type RankingListProps = {
 };
 
 function RankingList({ title, rankData, field }: RankingListProps) {
+  console.log("Rendering RankingList with data:", rankData);
   return (
     <section className="text-gray-800 bg-white shadow-md rounded-lg p-6 w-full max-w-sm">
       <h2>{title}</h2>
       <ol>
-        {rankData.length === 0 && <li>데이터 없음</li>}
-        {rankData.map((item, index) => (
+        {rankData?.length === 0 && <li>데이터 없음</li>}
+        {rankData?.map((item, index) => (
           <li key={item.user_id + "_" + index} className="flex justify-between">
             {/* index 0, 1, 2에는 금, 은, 동 색깔 부여, 나머지는 검은색 */}
             <style jsx>{`
