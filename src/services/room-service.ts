@@ -15,14 +15,17 @@ export async function fetchParticipantData(link: string) {
   const token = sessionStorage.getItem("token");
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${link}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/participate/${link}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (res.ok) {
       if (res.status === 202) {
