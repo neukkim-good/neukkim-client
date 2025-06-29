@@ -16,7 +16,7 @@ export async function fetchParticipantData(link: string) {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/participate/${link}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/room/participate/${link}`,
       {
         method: "POST",
         credentials: "include",
