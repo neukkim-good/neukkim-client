@@ -57,7 +57,6 @@ export default function RoomDetailPage() {
     });
 
     // 방에 join 요청 등 초기 작업 가능
-
     return () => {
       socket.disconnect();
       console.log("Socket disconnected");
