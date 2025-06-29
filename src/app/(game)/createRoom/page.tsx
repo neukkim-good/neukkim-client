@@ -38,7 +38,7 @@ export default function CreateRoomPage() {
     console.log(payload);
     console.log(token);
 
-    await fetch("http://localhost:3001/room", {
+    await fetch(`${process.env.NEXT_PUBLIC_API_URL}/room`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -57,7 +57,7 @@ export default function CreateRoomPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center  py-12 px-4">
+    <div className="min-h-screen flex flex-col items-center  py-12 px-4">
       <main className="flex flex-col items-center bg-white rounded-2xl shadow-lg border border-gray-200 p-8 min-h-[280px]">
         <p className="mb-2 text-lg font-bold text-gray-700">방 제목</p>
         <input
