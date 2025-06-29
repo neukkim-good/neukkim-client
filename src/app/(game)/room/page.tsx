@@ -1,10 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { fetchParticipantData, fetchRoomData } from "@/services/room-service";
 
 export default function RoomListPage() {
   const router = useRouter();
-  const [token, setToken] = useState<string | null>("");
   const [roomArr, setRoomArr] = useState<
     {
       _id: string;
@@ -16,32 +16,17 @@ export default function RoomListPage() {
     }[]
   >([]);
   const enterRoom = function (link: string) {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/room/participate/${link}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    }).then((res) => {
-      if (res.ok) {
-        if (res.status === 202) {
-          console.log("재입장 했습니다");
-        }
-        router.push(`/room/${link}`);
+    fetchParticipantData(link).then((data) => {
+      if (data !== null) {
+        router.push(`/room/${data}`);
       }
     });
   };
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL}/room`)
-      .then((res) => res.json())
-      .then((data) => {
-        setRoomArr(data);
-        console.log(data);
-      });
-    // 세션 토큰 가져오기
-    const stored = sessionStorage.getItem("token");
-    setToken(stored);
+    fetchRoomData().then((data) => {
+      setRoomArr(data);
+      console.log(data);
+    });
   }, []);
 
   return (
