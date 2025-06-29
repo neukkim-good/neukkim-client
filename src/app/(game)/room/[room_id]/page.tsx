@@ -24,6 +24,8 @@ export default function RoomDetailPage() {
   const [room, setRoom] = useState<RoomDetail | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
+  const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
+
   useEffect(() => {
     if (!room_id) return;
 
@@ -69,6 +71,23 @@ export default function RoomDetailPage() {
     socketRef.current.on("user_joined", (data) => {
       console.log("누군가 들어왔습니다:", data.user_id);
       // 요기 화면에 사용자 정보 보여주면 됨!!!
+      const memberData = fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/users/${data.user_id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        }
+      )
+        .then((res) =>
+          res.json().then((user) => {
+            console.log("사용자 정보:", user);
+            return user.nickname;
+          })
+        )
+        .then((nickname) => {
+          setRoomMembers((prev) => new Set(prev).add(nickname));
+        });
     });
   }, []);
 
@@ -102,11 +121,23 @@ export default function RoomDetailPage() {
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           실시간 참가자 리스트
         </h2>
+        <div className="w-full max-w-md bg-white rounded-lg shadow p-4">
+          <h3 className="text-md font-semibold text-gray-800 mb-2">
+            현재 참가자:
+          </h3>
+          <ul className="list-disc pl-5">
+            {Array.from(roomMembers).map((member) => (
+              <li key={member} className="text-gray-700">
+                {member}
+              </li>
+            ))}
+          </ul>
+        </div>
         <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           onClick={() => sendMessage("소켓 통신 테스트")}
         >
-          소켓 통신 테스트 버튼입니둥
+          준비완료
         </button>
         <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
