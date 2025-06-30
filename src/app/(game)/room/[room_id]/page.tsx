@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useStatusStore from "@/stores/reenter";
 
 export default function RoomDetailPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function RoomDetailPage() {
   // const [readySet, setReadySet] = useState<Set<string>>(new Set());
   const [hasClickedReady, setHasClickedReady] = useState(false);
   const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
+  const { isNew } = useStatusStore();
   const [gameStartState, setGameStartState] = useState(false);
 
   useEffect(() => {
@@ -34,7 +36,12 @@ export default function RoomDetailPage() {
       .catch((err) =>
         toast.error("방 정보를 불러오는 데 실패했습니다: " + err.message)
       );
-    toast.success("입장에 성공했습니다");
+    if (isNew) {
+      console.log(isNew);
+      toast.success("입장에 성공했습니다");
+    } else {
+      toast.success("재입장에 성공했습니다.");
+    }
   }, [room_id]);
 
   // 소켓 연결을 한 번만 설정
