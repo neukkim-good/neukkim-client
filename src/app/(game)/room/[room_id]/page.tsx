@@ -25,6 +25,7 @@ export default function RoomDetailPage() {
   const socketRef = useRef<Socket | null>(null);
 
   const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
+  const [gameStartState, setGameStartState] = useState(false);
 
   useEffect(() => {
     if (!room_id) return;
@@ -97,7 +98,32 @@ export default function RoomDetailPage() {
           setRoomMembers((prev) => new Set(prev).add(user.nickname))
         );
     });
+
+    socketRef.current.on("game_started", () => {
+      console.log("게임이 시작되었습니다.");
+      alert("3초 뒤 게임이 곧 시작됩니다!");
+      setGameStartState(true);
+    });
   }, []);
+
+  useEffect(() => {
+    console.log("게임 시작 상태:", gameStartState);
+    if (gameStartState) {
+      const timeout = setTimeout(() => {
+        const board = room?.board;
+        if (!board || !room_id) return alert("게임을 시작할 수 없습니다.");
+
+        const query = new URLSearchParams({
+          room_id,
+          board: JSON.stringify(board),
+        }).toString();
+
+        router.replace(`/apple-game-betting?${query}`);
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [gameStartState]);
 
   const sendMessage = (message: string) => {
     const token = sessionStorage.getItem("token");
@@ -109,6 +135,11 @@ export default function RoomDetailPage() {
       token,
       socket_id: socketRef.current.id,
     });
+  };
+
+  const handleStartGame = () => {
+    if (!socketRef.current) return;
+    socketRef.current.emit("start_game", { room_id: room_id });
   };
 
   return (
@@ -150,15 +181,7 @@ export default function RoomDetailPage() {
         <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           onClick={() => {
-            const board = room?.board;
-            if (!board || !room_id) return alert("게임을 시작할 수 없습니다.");
-
-            const query = new URLSearchParams({
-              room_id,
-              board: JSON.stringify(board),
-            }).toString();
-
-            router.replace(`/apple-game-betting?${query}`);
+            handleStartGame();
           }}
         >
           게임 시작하기
