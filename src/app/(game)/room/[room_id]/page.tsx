@@ -41,7 +41,7 @@ export default function RoomDetailPage() {
         // console.log("방 정보:", data);
       })
       .catch((err) =>
-        alert("방 정보를 불러오는 데 실패했습니다: " + err.message)
+        toast.error("방 정보를 불러오는 데 실패했습니다: " + err.message)
       );
     toast.success("입장에 성공했습니다");
   }, [room_id]);
@@ -114,7 +114,8 @@ export default function RoomDetailPage() {
     if (gameStartState) {
       const timeout = setTimeout(() => {
         const board = room?.board;
-        if (!board || !room_id) return alert("게임을 시작할 수 없습니다.");
+        if (!board || !room_id)
+          return toast.error("게임을 시작할 수 없습니다.");
 
         const query = new URLSearchParams({
           room_id,
@@ -185,14 +186,15 @@ export default function RoomDetailPage() {
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           onClick={async () => {
             const token = sessionStorage.getItem("token");
-            if (!token) return alert("로그인이 필요합니다.");
+            if (!token) return toast.error("로그인이 필요합니다.");
             const board = room?.board;
-            if (!board || !room_id) return alert("게임을 시작할 수 없습니다.");
+            if (!board || !room_id)
+              return toast.error("게임을 시작할 수 없습니다.");
 
             try {
               const alreadyPlayed = await checkAlreadyPlayed(room_id, token);
               if (alreadyPlayed) {
-                return alert(
+                return toast.error(
                   "이미 게임을 플레이했습니다. 다시 플레이할 수 없습니다."
                 );
               }
@@ -200,7 +202,9 @@ export default function RoomDetailPage() {
               handleStartGame();
             } catch (error) {
               console.log("게임 시작 오류:", error);
-              alert("게임 시작에 실패했습니다. 나중에 다시 시도해주세요.");
+              toast.error(
+                "게임 시작에 실패했습니다. 나중에 다시 시도해주세요."
+              );
             }
           }}
         >
