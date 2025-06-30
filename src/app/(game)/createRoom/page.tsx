@@ -19,7 +19,7 @@ export default function CreateRoomPage() {
     const date = now.getDate();
 
     // 오늘 날짜 + 입력 시간으로 Date 객체 생성 (로컬 시간)
-    const localDate = new Date(year, month, date, Number(selectHour), 50, 0);
+    const localDate = new Date(year, month, date + 1, Number(selectHour), 50, 0);
 
     // UTC ISO 문자열로 변환
     return localDate.toISOString();

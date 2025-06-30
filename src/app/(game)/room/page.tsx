@@ -2,6 +2,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { fetchParticipantData, fetchRoomData } from "@/services/room-service";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RoomListPage() {
   const router = useRouter();
@@ -17,7 +19,10 @@ export default function RoomListPage() {
   >([]);
   const enterRoom = function (link: string) {
     fetchParticipantData(link).then((data) => {
-      if (data !== null) {
+      if (data === null) {
+        toast.error("인원이 가득찬 방입니다.");
+      } else {
+        toast.success("입장 중입니다.");
         router.push(`/room/${data}`);
       }
     });
@@ -77,21 +82,12 @@ export default function RoomListPage() {
                         })}`;
                       })()}
                     </p>
-                    {data.currentUser === data.maxUser ? (
-                      <button
-                        className=" w-20 bg-gray-300 text-white py-2 rounded-lg font-medium transition"
-                        disabled
-                      >
-                        Full
-                      </button>
-                    ) : (
-                      <button
-                        className=" w-20 bg-green-600 hover:bg-red-500 text-white py-2 rounded-lg font-medium transition"
-                        onClick={() => enterRoom(data._id)}
-                      >
-                        참가하기
-                      </button>
-                    )}
+                    <button
+                      className=" w-20 bg-green-600 hover:bg-red-500 text-white py-2 rounded-lg font-medium transition"
+                      onClick={() => enterRoom(data._id)}
+                    >
+                      참가하기
+                    </button>
                   </div>
                 </li>
               ))}
@@ -132,6 +128,12 @@ export default function RoomListPage() {
           </button>
         </div>
       </main>
+      <ToastContainer
+        position="bottom-right"
+        hideProgressBar
+        limit={3}
+        autoClose={1500}
+      />
     </div>
   );
 }
