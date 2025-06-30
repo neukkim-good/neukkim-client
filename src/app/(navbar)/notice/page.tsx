@@ -56,7 +56,6 @@ export default function NotifyPage() {
                 <ol className="list-disc list-inside space-y-1">
                   {modalData.map((user, idx) => (
                     <li key={idx} className="flex justify-between">
-                      {/* index 0, 1, 2에는 금, 은, 동 색깔 부여, 나머지는 검은색 */}
                       <style jsx>{`
                         li {
                           color: ${idx === 0
@@ -84,7 +83,6 @@ export default function NotifyPage() {
                             ? "🥉"
                             : ""}
                         </span>
-                        {/* {user[field]}{" "} */}
                       </div>
                     </li>
                   ))}
@@ -93,7 +91,6 @@ export default function NotifyPage() {
                   className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-red-500 transition"
                   onClick={() => setModalOpen(false)}
                 >
-                  {/* {/* border border-gray-100 hover:border-red-500 transition */}
                   닫기
                 </button>
               </div>

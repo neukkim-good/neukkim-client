@@ -21,16 +21,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true); // 2. 로딩 상태 추가
 
   useEffect(() => {
-    // 3. 2초 후에 로딩 상태를 false로 변경
     const timer = setTimeout(() => {
       setLoading(false);
-    }, 3000);
+    }, 2000);
 
-    // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
     return () => clearTimeout(timer);
-  }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행되도록 합니다.
+  }, []); 
 
-  // 4. 로딩 상태가 true이면 SplashScreen을 보여줍니다.
   if (loading) {
     return <SplashScreen />;
   }

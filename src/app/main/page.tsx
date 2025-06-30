@@ -78,60 +78,81 @@ export default function MainPage() {
   };
 
   return (
-    <div className="grid grid-rows-[2px_32em_2px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+    <div className="grid grid-rows-[2px_22em_2px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="text-center"></header>
       <main>
-        <div className="rounded-xl p-6 m-3 flex justify-around">
-          <Link href="/apple-game">
-            <div
-              className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
-              onMouseEnter={() => handleMouseEnter("solo")}
-              onMouseLeave={() => handleMouseLeave("solo")}
-            >
-              <img
-                src={imageSources.solo}
-                alt="혼자하기"
-                className="w-24 h-24 mb-8 transform transition-transform duration-300 ease-in-out group-hover:scale-110"
-              />
-              <span className="text-3xl transform transition-transform duration-300 ease-in-out group-hover:scale-110">
-                혼자하기
-              </span>
-            </div>
-          </Link>
+        {/* ✅ 이 부분에 items-end를 추가하여 자식 요소들을 아래 기준으로 정렬합니다. */}
+        <div className="rounded-xl p-6 m-3 flex justify-around items-end">
+          {/* 혼자하기 버튼 그룹 */}
+          <div className="flex flex-col items-center">
+            <img
+              src="/sol_char2.png"
+              alt="솔로 플레이 캐릭터"
+              className="w-32 h-32 mr-40"
+            />
+            <Link href="/apple-game">
+              <div
+                className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
+                onMouseEnter={() => handleMouseEnter("solo")}
+                onMouseLeave={() => handleMouseLeave("solo")}
+              >
+                <img
+                  src={imageSources.solo}
+                  alt="혼자하기"
+                  className="w-24 h-24 mb-8 transform transition-transform duration-300 ease-in-out group-hover:scale-110"
+                />
+                <span className="text-3xl transform transition-transform duration-300 ease-in-out group-hover:scale-110">
+                  혼자하기
+                </span>
+              </div>
+            </Link>
+          </div>
 
-          <Link href="/room">
-            <div
-              className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
-              onMouseEnter={() => handleMouseEnter("team")}
-              onMouseLeave={() => handleMouseLeave("team")}
-            >
-              <img
-                src={imageSources.team}
-                alt="같이하기"
-                className="w-24 h-24 mb-8 transform transition-transform duration-300 ease-in-out group-hover:scale-110"
-              />
-              <span className="text-3xl transform transition-transform duration-300 ease-in-out group-hover:scale-110">
-                같이하기
-              </span>
-            </div>
-          </Link>
+          {/* 같이하기 버튼 (mt-80 제거) */}
+          <div className="flex flex-col items-center">
+            <div className="w-32 h-32"></div>
+            <Link href="/room">
+              <div
+                className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
+                onMouseEnter={() => handleMouseEnter("team")}
+                onMouseLeave={() => handleMouseLeave("team")}
+              >
+                <img
+                  src={imageSources.team}
+                  alt="같이하기"
+                  className="w-24 h-24 mb-8 transform transition-transform duration-300 ease-in-out group-hover:scale-110"
+                />
+                <span className="text-3xl transform transition-transform duration-300 ease-in-out group-hover:scale-110">
+                  같이하기
+                </span>
+              </div>
+            </Link>
+          </div>
 
-          <Link href="/ranking">
-            <div
-              className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
-              onMouseEnter={() => handleMouseEnter("ranking")}
-              onMouseLeave={() => handleMouseLeave("ranking")}
-            >
-              <img
-                src={imageSources.ranking}
-                alt="랭킹보기"
-                className="w-24 h-24 mb-8 transform transition-transform duration-300 ease-in-out group-hover:scale-110"
-              />
-              <span className="text-3xl transform transition-transform duration-300 ease-in-out group-hover:scale-110">
-                랭킹
-              </span>
-            </div>
-          </Link>
+          {/* 랭킹 버튼 그룹 */}
+          <div className="flex flex-col items-center">
+            <img
+              src="/sol_char1.png"
+              alt="랭킹 캐릭터"
+              className="w-32 h-32 ml-40"
+            />
+            <Link href="/ranking">
+              <div
+                className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
+                onMouseEnter={() => handleMouseEnter("ranking")}
+                onMouseLeave={() => handleMouseLeave("ranking")}
+              >
+                <img
+                  src={imageSources.ranking}
+                  alt="랭킹보기"
+                  className="w-24 h-24 mb-8 transform transition-transform duration-300 ease-in-out group-hover:scale-110"
+                />
+                <span className="text-3xl transform transition-transform duration-300 ease-in-out group-hover:scale-110">
+                  랭킹
+                </span>
+              </div>
+            </Link>
+          </div>
         </div>
       </main>
     </div>
