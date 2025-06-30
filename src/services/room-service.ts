@@ -15,19 +15,19 @@ export async function fetchParticipantData(link: string) {
   const token = sessionStorage.getItem("token");
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/${link}`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/room/participate/${link}`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
     if (res.ok) {
-      if (res.status === 202) {
-        console.log("재입장 했습니다");
-      }
       return link;
     } else {
       console.warn("참가 실패", res.status);

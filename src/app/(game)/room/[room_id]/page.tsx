@@ -6,6 +6,8 @@ import { RoomDetail } from "@/types/api/RoomDetail";
 import { fetchRoomDetail } from "@/services/room-service";
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RoomDetailPage() {
   const router = useRouter();
@@ -38,6 +40,7 @@ export default function RoomDetailPage() {
       .catch((err) =>
         alert("방 정보를 불러오는 데 실패했습니다: " + err.message)
       );
+    toast.success("입장에 성공했습니다");
   }, [room_id]);
 
   // 소켓 연결을 한 번만 설정
@@ -153,6 +156,12 @@ export default function RoomDetailPage() {
           </table>
         </div>
       </main>
+      <ToastContainer
+        position="bottom-right"
+        hideProgressBar
+        limit={3}
+        autoClose={1500}
+      />
     </div>
   );
 }
