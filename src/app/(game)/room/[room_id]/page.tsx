@@ -3,7 +3,7 @@
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { RoomDetail } from "@/types/api/RoomDetail";
-import { fetchRoomDetail } from "@/services/room-service";
+import { checkAlreadyPlayed, fetchRoomDetail } from "@/services/room-service";
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 
@@ -110,16 +110,30 @@ export default function RoomDetailPage() {
         </button>
         <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-          onClick={() => {
+          onClick={async () => {
+            const token = sessionStorage.getItem("token");
+            if (!token) return alert("로그인이 필요합니다.");
             const board = room?.board;
             if (!board || !room_id) return alert("게임을 시작할 수 없습니다.");
 
-            const query = new URLSearchParams({
-              room_id,
-              board: JSON.stringify(board),
-            }).toString();
+            try {
+              const alreadyPlayed = await checkAlreadyPlayed(room_id, token);
+              if (alreadyPlayed) {
+                return alert(
+                  "이미 게임을 플레이했습니다. 다시 플레이할 수 없습니다."
+                );
+              }
 
-            router.replace(`/apple-game-betting?${query}`);
+              const query = new URLSearchParams({
+                room_id,
+                board: JSON.stringify(board),
+              }).toString();
+
+              router.replace(`/apple-game-betting?${query}`);
+            } catch (error) {
+              console.log("게임 시작 오류:", error);
+              alert("게임 시작에 실패했습니다. 나중에 다시 시도해주세요.");
+            }
           }}
         >
           게임 시작하기
