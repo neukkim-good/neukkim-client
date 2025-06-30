@@ -276,6 +276,12 @@ export default function ClientBetting() {
     };
   }, [isGameRunning, room_id]);
 
+  // 페이지 진입 즉시 게임 자동 시작
+  useEffect(() => {
+    if (board) startGame();
+    else alert("게임을 시작할 수 없습니다.");
+  }, [board, startGame]);
+
   return (
     <div id="game-container">
       <div id="score-container">
@@ -293,11 +299,11 @@ export default function ClientBetting() {
               시작하려면 Play 버튼을 누르세요
             </p>
           </div>
-          <div className="splash-content">
+          {/* <div className="splash-content hidden">
             <button id="start-button" onClick={startGame}>
               Play
             </button>
-          </div>
+          </div> */}
         </div>
         <div id="result-modal" className="hidden" ref={resultModalRef}>
           <div className="modal-content">
