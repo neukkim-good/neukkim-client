@@ -109,6 +109,43 @@ module.exports = {
             opacity: "0",
           },
         },
+        flyPath1: {
+          "0%": { transform: "translate(0, 0) rotate(0deg)", opacity: 1 },
+          "25%": {
+            transform: "translate(20vw, -30vh) rotate(90deg)",
+            opacity: 0.8,
+          },
+          "50%": {
+            transform: "translate(-10vw, -60vh) rotate(180deg)",
+            opacity: 1,
+          },
+          "75%": {
+            transform: "translate(15vw, -90vh) rotate(270deg)",
+            opacity: 0.5,
+          },
+          "100%": {
+            transform: "translate(5vw, -120vh) rotate(360deg)",
+            opacity: 0,
+          },
+        },
+        flyPath2: {
+          "0%": {
+            transform: "translate(0, 0) scale(0.8) rotate(-20deg)",
+            opacity: 1,
+          },
+          "50%": {
+            transform: "translate(-25vw, -50vh) scale(1.2) rotate(20deg)",
+            opacity: 0.7,
+          },
+          "100%": {
+            transform: "translate(5vw, -110vh) scale(0.5) rotate(-5deg)",
+            opacity: 0,
+          },
+        },
+        pulseAndFade: {
+          "0%, 100%": { transform: "scale(1)", opacity: "0.8" },
+          "50%": { transform: "scale(1.3)", opacity: "0.4" },
+        },
       },
     },
   },
@@ -125,9 +162,5 @@ module.exports = {
     "animate-fade-in-up",
     "animate-typing",
     "animate-pulse-glow",
-    "flyAround1",
-    "flyAround2",
-    "flyAround3",
-    "flyAround4",
   ],
 };

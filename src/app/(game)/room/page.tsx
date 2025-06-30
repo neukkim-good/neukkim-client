@@ -35,7 +35,7 @@ export default function RoomListPage() {
         {/* 헤더 */}
         <div className="text-center mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
-            내기 리스트
+            멀티 플레이
           </h1>
           <p className="text-gray-500">
             참여할 방을 선택하거나 새로운 방을 만들어보세요!
@@ -113,7 +113,7 @@ export default function RoomListPage() {
             onClick={() => {
               router.push("/createRoom");
             }}
-            className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition"
+            className="flex items-center gap-2 bg-green-600 hover:bg-red-500 text-white px-6 py-3 rounded-lg font-semibold shadow-md transition"
           >
             <svg
               className="w-5 h-5"

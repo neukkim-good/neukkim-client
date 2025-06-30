@@ -30,6 +30,10 @@ export default function AnimatedBackground() {
       "animate-opacity-pulse",
       "animate-float",
       "animate-wiggle",
+      "animate-fly-path-1",
+      "animate-fly-path-2",
+      "animate-pulse-and-fade",
+      "animate-side-to-side",
     ],
     []
   );
@@ -56,7 +60,6 @@ export default function AnimatedBackground() {
   }, [animations]);
 
   return (
-    // 배경은 fixed와 z-0를 사용하여 뷰포트 전체를 덮고 최하단 레이어에 위치시킵니다.
     <div className="fixed inset-0 z-0 bg-gradient-to-br from-red-50 via-green-50 to-yellow-50 overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         {particles.map((p) => (

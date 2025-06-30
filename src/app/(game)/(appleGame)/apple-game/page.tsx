@@ -257,7 +257,8 @@ export default function AppleGame() {
         <div id="selection-box" className="hidden" ref={selectionBoxRef}></div>
         <div id="splash-screen" ref={splashRef}>
           <div className="splash-header">
-            <h1>사과 게임</h1>
+            <h1 className="text-bold text-xl">사과 게임</h1>
+            <br></br>
             <p>시작하려면 Play 버튼을 누르세요</p>
           </div>
           <div className="splash-content">
