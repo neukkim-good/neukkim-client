@@ -26,6 +26,8 @@ export default function RoomDetailPage() {
   const [room, setRoom] = useState<RoomDetail | null>(null);
   const socketRef = useRef<Socket | null>(null);
 
+  const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
+
   useEffect(() => {
     if (!room_id) return;
 
@@ -60,12 +62,45 @@ export default function RoomDetailPage() {
     });
 
     // 방에 join 요청 등 초기 작업 가능
-
     return () => {
       socket.disconnect();
       console.log("Socket disconnected");
     };
   }, [room_id]);
+
+  useEffect(() => {
+    if (!socketRef.current) return;
+
+    // 1. 기존 멤버 목록 수신
+    socketRef.current.on("room_members", (data) => {
+      console.log("기존 멤버들:", data.user_ids);
+      data.user_ids.forEach((user_id: any) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user_id}`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((user) =>
+            setRoomMembers((prev) => new Set(prev).add(user.nickname))
+          );
+      });
+    });
+
+    // 2. 새 멤버 입장 알림
+    socketRef.current.on("user_joined", (data) => {
+      console.log("누군가 들어왔습니다:", data.user_id);
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${data.user_id}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((user) =>
+          setRoomMembers((prev) => new Set(prev).add(user.nickname))
+        );
+    });
+  }, []);
 
   const sendMessage = (message: string) => {
     const token = sessionStorage.getItem("token");
@@ -97,11 +132,23 @@ export default function RoomDetailPage() {
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           실시간 참가자 리스트
         </h2>
+        <div className="w-full max-w-md bg-white rounded-lg shadow p-4">
+          <h3 className="text-md font-semibold text-gray-800 mb-2">
+            현재 참가자:
+          </h3>
+          <ul className="list-disc pl-5">
+            {Array.from(roomMembers).map((member) => (
+              <li key={member} className="text-gray-700">
+                {member}
+              </li>
+            ))}
+          </ul>
+        </div>
         <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           onClick={() => sendMessage("소켓 통신 테스트")}
         >
-          소켓 통신 테스트 버튼입니둥
+          준비완료
         </button>
         <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
