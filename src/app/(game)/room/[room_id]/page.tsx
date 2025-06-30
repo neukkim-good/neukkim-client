@@ -66,7 +66,7 @@ export default function RoomDetailPage() {
     // 1. 기존 멤버 목록 수신
     socketRef.current.on("room_members", (data) => {
       console.log("기존 멤버들:", data.user_ids);
-      data.user_ids.forEach((user_id: any) => {
+      data.user_ids.forEach((user_id: string) => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user_id}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -146,7 +146,10 @@ export default function RoomDetailPage() {
         {room && (
           <div className="mt-2 text-gray-700 text-sm">
             {room.is_host && (
-              <span className="ml-2 text-green-600 font-bold">(방장)</span>
+              <span className="ml-2 text-green-600 font-bold">
+                당신은 이 방의 방장입니다. 게임 시작하기 버튼을 눌러 내기를
+                시작해 보세요!
+              </span>
             )}
           </div>
         )}
