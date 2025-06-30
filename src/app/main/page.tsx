@@ -133,6 +133,14 @@ export default function MainPage() {
           {/* 같이하기 버튼 (mt-80 제거) */}
           <div className="flex flex-col items-center">
             <div className="w-32 h-32"></div>
+            <img
+              src="/sol_char3.png"
+              alt="멀티 플레이 캐릭터"
+              className="w-40 mr-35 cursor-pointer"
+              onClick={() => setEasterEgg(easterEgg + 1)}
+              data-tooltip-id="soloTooltip"
+              data-tooltip-content="상대와 사과게임을 겨뤄보세요! 저를 여러번 클릭해봐요!"
+            />
             <Link href="/room">
               <div
                 className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
