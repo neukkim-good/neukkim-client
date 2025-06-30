@@ -114,7 +114,7 @@ export default function MyPage() {
           setTodayHighScore(data.todayMaxScore);
         } catch (err: any) {
           setError(err.message);
-          setTodayHighScore("정보 없음");
+          setTodayHighScore("0");
         } finally {
           setTodayMaxScoreLoading(false);
         }
@@ -459,7 +459,7 @@ export default function MyPage() {
                       </h3>
                       <div className="space-y-2">
                         {isRecordsLoading ? (
-                          <p>개인 기록을 불러오는 중입니다...</p>
+                          <p>...</p>
                         ) : records.length > 0 ? (
                           records.map((record) => (
                             <div
@@ -475,9 +475,7 @@ export default function MyPage() {
                             </div>
                           ))
                         ) : (
-                          <p className="text-gray-500">
-                            표시할 개인 기록이 없습니다.
-                          </p>
+                          <p className="text-gray-500"></p>
                         )}
                       </div>
                     </div>
@@ -489,7 +487,7 @@ export default function MyPage() {
                       </h3>
                       <div className="space-y-3">
                         {isGameResultLoading ? (
-                          <p>내기 기록을 불러오는 중입니다...</p>
+                          <p>...</p>
                         ) : gameResult.length > 0 ? (
                           [...gameResult]
                             .sort(
@@ -524,9 +522,7 @@ export default function MyPage() {
                               </div>
                             ))
                         ) : (
-                          <p className="text-gray-500">
-                            표시할 내기 기록이 없습니다.
-                          </p>
+                          <p className="text-gray-500"></p>
                         )}
                       </div>
                     </div>

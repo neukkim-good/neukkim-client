@@ -26,7 +26,7 @@ export default function Home() {
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, []); 
+  }, []);
 
   if (loading) {
     return <SplashScreen />;
@@ -224,7 +224,7 @@ export default function Home() {
 
             <button
               type="submit"
-              className="w-full py-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+              className="w-full py-2 mt-4  text-white font-semibold rounded-md bg-green-600 hover:bg-red-500 transition"
             >
               회원가입
             </button>
@@ -232,7 +232,7 @@ export default function Home() {
         )}
 
         <div className="text-sm text-center text-gray-600 mt-4 ">
-          {isLogin ? "계정이 없으신가요? " : "이미 계정이 있으신가요?"}{" "}
+          {isLogin ? "계정이 없으신가요? " : "이미 계정이 있으신가요? "}
           <button
             type="button"
             className="text-green-600 hover:underline"
