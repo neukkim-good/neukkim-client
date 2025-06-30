@@ -170,22 +170,14 @@ export default function RoomDetailPage() {
             </thead>
             <tbody>
               {room &&
-                Array.from(roomMembers).map((nickname, idx) => (
+                Array.from(roomMembers).map((nickname) => (
                   <tr
                     key={nickname}
-                    className={`border-t ${
-                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition`}
+                    className="border-t bg-white hover:bg-gray-100 transition"
                   >
                     <td className="px-4 py-3 text-gray-800">{nickname}</td>
-                    <td
-                      className={`px-4 py-3 ${
-                        idx % 2 === 0
-                          ? "text-green-600 font-bold"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {idx % 2 === 0 ? "Ready" : "Not Ready"}
+                    <td className="px-4 py-3 text-green-600 font-bold">
+                      Ready
                     </td>
                   </tr>
                 ))}
