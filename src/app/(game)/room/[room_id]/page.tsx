@@ -68,26 +68,34 @@ export default function RoomDetailPage() {
   useEffect(() => {
     if (!socketRef.current) return;
 
-    socketRef.current.on("user_joined", (data) => {
-      console.log("누군가 들어왔습니다:", data.user_id);
-      // 요기 화면에 사용자 정보 보여주면 됨!!!
-      const memberData = fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${data.user_id}`,
-        {
+    // 1. 기존 멤버 목록 수신
+    socketRef.current.on("room_members", (data) => {
+      console.log("기존 멤버들:", data.user_ids);
+      data.user_ids.forEach((user_id: any) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user_id}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
-        }
-      )
-        .then((res) =>
-          res.json().then((user) => {
-            console.log("사용자 정보:", user);
-            return user.nickname;
-          })
-        )
-        .then((nickname) => {
-          setRoomMembers((prev) => new Set(prev).add(nickname));
-        });
+        })
+          .then((res) => res.json())
+          .then((user) =>
+            setRoomMembers((prev) => new Set(prev).add(user.nickname))
+          );
+      });
+    });
+
+    // 2. 새 멤버 입장 알림
+    socketRef.current.on("user_joined", (data) => {
+      console.log("누군가 들어왔습니다:", data.user_id);
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${data.user_id}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((user) =>
+          setRoomMembers((prev) => new Set(prev).add(user.nickname))
+        );
     });
   }, []);
 
