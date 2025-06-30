@@ -10,20 +10,11 @@ import { io, Socket } from "socket.io-client";
 export default function RoomDetailPage() {
   const router = useRouter();
   const { room_id } = useParams<{ room_id: string }>();
-  // const [room, setRoom] = useState<Room | null>(null);
-
-  //   useEffect(() => {
-  //     if (!room_id) return;
-  //     fetch(`http://localhost:3000/betting/${room_id}`)
-  //       .then((res) => res.json())
-  //       .then((data: Room) => setRoom(data));
-  //   }, [room_id]);
-
-  //   if (!room) return <p>로딩 중…</p>;
-
   const [room, setRoom] = useState<RoomDetail | null>(null);
   const socketRef = useRef<Socket | null>(null);
-
+  // const [isReady, setIsReady] = useState(false);
+  // const [readySet, setReadySet] = useState<Set<string>>(new Set());
+  const [hasClickedReady, setHasClickedReady] = useState(false);
   const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
 
   useEffect(() => {
@@ -133,7 +124,54 @@ export default function RoomDetailPage() {
             ))}
           </ul>
         </div>
-        <button
+
+        {/* 방장이면 "게임 시작하기" 버튼도 있도록 */}
+        {room?.is_host ? (
+          <>
+            <button
+              className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                const board = room?.board;
+                if (!board || !room_id)
+                  return alert("게임을 시작할 수 없습니다.");
+
+                const query = new URLSearchParams({
+                  room_id,
+                  board: JSON.stringify(board),
+                }).toString();
+
+                router.replace(`/apple-game-betting?${query}`);
+              }}
+              disabled={roomMembers.size < 2}
+            >
+              게임 시작하기
+            </button>
+            <button
+              className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                sendMessage("Ready");
+                setHasClickedReady(true);
+              }}
+              disabled={hasClickedReady}
+            >
+              {hasClickedReady ? "준비 완료" : "레디"}
+            </button>
+          </>
+        ) : (
+          // 참가자용 "레디" 버튼
+          <button
+            className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => {
+              sendMessage("Ready");
+              setHasClickedReady(true);
+            }}
+            disabled={hasClickedReady}
+          >
+            {hasClickedReady ? "준비 완료" : "레디"}
+          </button>
+        )}
+
+        {/* <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
           onClick={() => sendMessage("소켓 통신 테스트")}
         >
@@ -154,7 +192,8 @@ export default function RoomDetailPage() {
           }}
         >
           게임 시작하기
-        </button>
+        </button> */}
+
         <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
           <table className="min-w-[300px] table-auto border-collapse">
             <thead className="bg-gray-100">
