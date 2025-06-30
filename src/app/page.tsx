@@ -21,16 +21,13 @@ export default function Home() {
   const [loading, setLoading] = useState(true); // 2. 로딩 상태 추가
 
   useEffect(() => {
-    // 3. 2초 후에 로딩 상태를 false로 변경
     const timer = setTimeout(() => {
       setLoading(false);
     }, 2000);
 
-    // 컴포넌트가 언마운트될 때 타이머를 정리합니다.
     return () => clearTimeout(timer);
-  }, []); // 빈 배열을 전달하여 컴포넌트가 마운트될 때 한 번만 실행되도록 합니다.
+  }, []); 
 
-  // 4. 로딩 상태가 true이면 SplashScreen을 보여줍니다.
   if (loading) {
     return <SplashScreen />;
   }
@@ -100,14 +97,10 @@ export default function Home() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)] ">
       <header className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800">
-          {isLogin ? "로그인 화면" : "회원가입 화면"}
+        <h1 className="text-4xl font-bold text-gray-800 ">
+          {isLogin ? "로그인" : "회원가입"}
         </h1>
-        <p className="text-gray-500 mt-2">
-          {isLogin
-            ? "이 부분 코드 잘 작성해주세요~"
-            : "회원가입 코드 작성해주세요~"}
-        </p>
+        <p className="text-gray-500 mt-2">{isLogin ? "" : ""}</p>
       </header>
 
       <main className="w-full max-w-sm bg-white shadow-md rounded-lg p-8">
@@ -151,7 +144,7 @@ export default function Home() {
 
             <button
               type="submit"
-              className="w-full py-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+              className="w-full py-2 mt-4 text-white font-semibold rounded-md bg-green-600 hover:bg-red-500 transition"
             >
               로그인
             </button>
@@ -238,11 +231,11 @@ export default function Home() {
           </form>
         )}
 
-        <div className="text-sm text-center text-gray-600 mt-4">
-          {isLogin ? "계정이 없으신가요?" : "이미 계정이 있으신가요?"}{" "}
+        <div className="text-sm text-center text-gray-600 mt-4 ">
+          {isLogin ? "계정이 없으신가요? " : "이미 계정이 있으신가요?"}{" "}
           <button
             type="button"
-            className="text-blue-500 hover:underline"
+            className="text-green-600 hover:underline"
             onClick={() => setIsLogin(!isLogin)}
           >
             {isLogin ? "회원가입 하기" : "로그인 하기"}

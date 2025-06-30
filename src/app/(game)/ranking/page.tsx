@@ -24,25 +24,40 @@ export default function RankingPage() {
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="text-center">
-        <h1 className="text-4xl font-bold text-gray-800">🍏순위 페이지🍎</h1>
+        <h1 className="text-4xl font-bold text-gray-800">🍏랭킹🍎</h1>
       </header>
-      <main className="flex flex-row justify-between w-full max-w-4xl">
-        <RankingList title="📅 오늘의 순위" rankData={dayRank} field="score" />
-        <RankingList
-          title="🗓️ 이번 주 기록 순위"
-          rankData={weekRank}
-          field="score"
-        />
-        <RankingList
-          title="📊 평균 점수 순위"
-          rankData={meanRank}
-          field="mean"
-        />
-        <RankingList
-          title="📊 승률 순위"
-          rankData={winRateRank}
-          field="score"
-        />
+      <main className="flex flex-row justify-around w-full">
+        <div className="basis-1/5">
+          <RankingList
+            title="📅 오늘의 순위"
+            rankData={dayRank}
+            field="score"
+          />
+        </div>
+
+        <div className="basis-1/5">
+          <RankingList
+            title="🗓️ 이번 주 기록 순위"
+            rankData={weekRank}
+            field="score"
+          />
+        </div>
+
+        <div className="basis-1/5">
+          <RankingList
+            title="📊 평균 점수 순위"
+            rankData={meanRank}
+            field="mean"
+          />
+        </div>
+
+        <div className="basis-1/5">
+          <RankingList
+            title="📊 승률 순위"
+            rankData={winRateRank}
+            field="score"
+          />
+        </div>
       </main>
     </div>
   );
@@ -65,7 +80,8 @@ function RankingList({ title, rankData, field }: RankingListProps) {
   console.log("Rendering RankingList with data:", rankData);
   return (
     <section className="text-gray-800 bg-white shadow-md rounded-lg p-6 w-full max-w-sm">
-      <h2>{title}</h2>
+      <h2 className="text-xl font-semibold">{title}</h2>
+      <br></br>
       <ol>
         {rankData?.length === 0 && <li>데이터 없음</li>}
         {rankData?.map((item, index) => (

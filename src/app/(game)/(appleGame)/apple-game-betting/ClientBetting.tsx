@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import "../style.css"; // Import your CSS styles
 import { sendBettingResult } from "@/services/applegame-service";
 import {
@@ -12,8 +12,9 @@ import {
 } from "../appleGameLogic";
 
 export default function ClientBetting() {
-  const TOTAL_TIME = 10; // 디버깅을 위해 10초로 설정
+  const TOTAL_TIME = 120; // 디버깅을 위해 10초로 설정
 
+  const router = useRouter();
   const searchParams = useSearchParams();
   const boardStr = searchParams.get("board");
   const room_id = searchParams.get("room_id");
@@ -219,6 +220,68 @@ export default function ClientBetting() {
     scoreRef.current = score; // 점수 최신값을 ref에 저장
   }, [score]);
 
+  // 창 닫기 또는 새로고침 시 경고창 및 0점 처리
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isGameRunning) {
+        e.preventDefault();
+        e.returnValue =
+          "정말 게임을 종료하시겠습니까? 점수는 0점으로 처리됩니다.";
+        return "";
+      }
+    };
+
+    const handleUnload = () => {
+      if (isGameRunning && room_id) {
+        console.log("게임이 종료되어 점수는 0점으로 처리됩니다.");
+        sendBettingResult(0, room_id); // 게임 종료 시 0점으로 처리
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("unload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("unload", handleUnload);
+    };
+  }, [isGameRunning, room_id]);
+
+  // 뒤로가기 감지 추가
+  useEffect(() => {
+    if (!isGameRunning) return;
+
+    // 현재 상태를 푸시해버림 → 뒤로가기 누르면 popstate 발생
+    history.pushState(null, "", window.location.href);
+
+    const handlePopState = () => {
+      if (isGameRunning) {
+        const confirmLeave = confirm(
+          "뒤로가기를 누르면 게임이 0점 처리됩니다. 정말 나가시겠습니까?"
+        );
+        if (!confirmLeave) {
+          history.pushState(null, "", window.location.href); // 다시 푸시해서 계속 현재 페이지 유지
+          return;
+        } else {
+          if (room_id) sendBettingResult(0, room_id); // 게임 종료 시 0점으로 처리
+          window.history.back(); // 진짜 뒤로가기
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isGameRunning, room_id]);
+
+  // 페이지 진입 즉시 게임 자동 시작
+  useEffect(() => {
+    if (board) startGame();
+    else alert("게임을 시작할 수 없습니다.");
+  }, [board, startGame]);
+
   return (
     <div id="game-container">
       <div id="score-container">
@@ -231,14 +294,16 @@ export default function ClientBetting() {
         <div id="selection-box" className="hidden" ref={selectionBoxRef}></div>
         <div id="splash-screen" ref={splashRef}>
           <div className="splash-header">
-            <h1>사과 게임</h1>
-            <p>시작하려면 Play 버튼을 누르세요</p>
+            <h1 className="text-3xl font-bold text-gray-800">사과 게임</h1>
+            <p className="mt-4 text-gray-600">
+              시작하려면 Play 버튼을 누르세요
+            </p>
           </div>
-          <div className="splash-content">
+          {/* <div className="splash-content hidden">
             <button id="start-button" onClick={startGame}>
               Play
             </button>
-          </div>
+          </div> */}
         </div>
         <div id="result-modal" className="hidden" ref={resultModalRef}>
           <div className="modal-content">
@@ -252,11 +317,7 @@ export default function ClientBetting() {
             <div
               style={{ display: "flex", gap: "10px", justifyContent: "center" }}
             >
-              <button
-                onClick={() => resultModalRef.current?.classList.add("hidden")}
-              >
-                닫기
-              </button>
+              <button onClick={() => router.replace("/main")}>닫기</button>
             </div>
           </div>
         </div>
