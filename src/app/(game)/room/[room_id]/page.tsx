@@ -104,7 +104,7 @@ export default function RoomDetailPage() {
 
     socketRef.current.on("game_started", () => {
       console.log("게임이 시작되었습니다.");
-      alert("3초 뒤 게임이 곧 시작됩니다!");
+      toast.success("3초 뒤 게임이 시작합니다.");
       setGameStartState(true);
     });
   }, []);
