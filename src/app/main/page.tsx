@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import React, { useState, useEffect, useRef } from "react";
+import { Tooltip } from "react-tooltip";
 
 export default function MainPage() {
   const hoverImages = [
@@ -22,6 +23,8 @@ export default function MainPage() {
   //각 버튼의 인터벌 ID와 이미지 인덱스를 객체 형태로 관리
   const intervalRefs = useRef<{ [key: string]: NodeJS.Timeout | number }>({});
   const imageIndexRefs = useRef<{ [key: string]: number }>({});
+
+  const [easterEgg, setEasterEgg] = useState(0);
 
   useEffect(() => {
     hoverImages.forEach((src) => {
@@ -81,6 +84,21 @@ export default function MainPage() {
     <div className="grid grid-rows-[2px_22em_2px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="text-center"></header>
       <main>
+        {easterEgg >= 10 ? (
+          <div className="fixed text-center mb-8 animate-fade-in-up position-fixed left-0 right-0 z-50">
+            <img
+              src="/logo_3.png"
+              alt="로고"
+              className="w-10
+           mx-auto mb-4"
+            />
+            <p className="font-extrabold mb-3 bg-gradient-to-r from-red-600 via-yellow-500 to-green-500 bg-clip-text text-transparent [background-size:200%_auto] animate-text-shimmer animate-fade-in-up">
+              개발자: 김민규, 여은동, 정다영, 한정우, 황인찬
+            </p>
+          </div>
+        ) : (
+          <div></div>
+        )}
         {/* ✅ 이 부분에 items-end를 추가하여 자식 요소들을 아래 기준으로 정렬합니다. */}
         <div className="rounded-xl p-6 m-3 flex justify-around items-end">
           {/* 혼자하기 버튼 그룹 */}
@@ -88,8 +106,12 @@ export default function MainPage() {
             <img
               src="/sol_char2.png"
               alt="솔로 플레이 캐릭터"
-              className="w-32 h-32 mr-40"
+              className="w-32 h-32 mr-40 cursor-pointer"
+              onClick={() => setEasterEgg(easterEgg + 1)}
+              data-tooltip-id="soloTooltip"
+              data-tooltip-content="혼자서 사과를 모아보세요! 저를 여러번 클릭해봐요!"
             />
+
             <Link href="/apple-game">
               <div
                 className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
@@ -134,8 +156,12 @@ export default function MainPage() {
             <img
               src="/sol_char1.png"
               alt="랭킹 캐릭터"
-              className="w-32 h-32 ml-40"
+              className="w-32 h-32 mr-40 cursor-pointer"
+              onClick={() => setEasterEgg(easterEgg + 1)}
+              data-tooltip-id="soloTooltip"
+              data-tooltip-content="사과게임 랭킹을 둘러봐요! 저를 여러번 클릭해봐요!"
             />
+
             <Link href="/ranking">
               <div
                 className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
@@ -154,6 +180,11 @@ export default function MainPage() {
             </Link>
           </div>
         </div>
+        <Tooltip
+          id="soloTooltip"
+          className="bg-black text-white p-2 rounded-md"
+          place="top"
+        />
       </main>
     </div>
   );
