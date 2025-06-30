@@ -3,9 +3,11 @@
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { RoomDetail } from "@/types/api/RoomDetail";
-import { fetchRoomDetail } from "@/services/room-service";
+import { checkAlreadyPlayed, fetchRoomDetail } from "@/services/room-service";
 import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function RoomDetailPage() {
   const router = useRouter();
@@ -16,6 +18,7 @@ export default function RoomDetailPage() {
   // const [readySet, setReadySet] = useState<Set<string>>(new Set());
   const [hasClickedReady, setHasClickedReady] = useState(false);
   const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
+  const [gameStartState, setGameStartState] = useState(false);
 
   useEffect(() => {
     if (!room_id) return;
@@ -29,8 +32,9 @@ export default function RoomDetailPage() {
         // console.log("방 정보:", data);
       })
       .catch((err) =>
-        alert("방 정보를 불러오는 데 실패했습니다: " + err.message)
+        toast.error("방 정보를 불러오는 데 실패했습니다: " + err.message)
       );
+    toast.success("입장에 성공했습니다");
   }, [room_id]);
 
   // 소켓 연결을 한 번만 설정
@@ -59,28 +63,62 @@ export default function RoomDetailPage() {
   useEffect(() => {
     if (!socketRef.current) return;
 
-    socketRef.current.on("user_joined", (data) => {
-      console.log("누군가 들어왔습니다:", data.user_id);
-      // 요기 화면에 사용자 정보 보여주면 됨!!!
-      const memberData = fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/users/${data.user_id}`,
-        {
+    // 1. 기존 멤버 목록 수신
+    socketRef.current.on("room_members", (data) => {
+      console.log("기존 멤버들:", data.user_ids);
+      data.user_ids.forEach((user_id: any) => {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user_id}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
           },
-        }
-      )
-        .then((res) =>
-          res.json().then((user) => {
-            console.log("사용자 정보:", user);
-            return user.nickname;
-          })
-        )
-        .then((nickname) => {
-          setRoomMembers((prev) => new Set(prev).add(nickname));
-        });
+        })
+          .then((res) => res.json())
+          .then((user) =>
+            setRoomMembers((prev) => new Set(prev).add(user.nickname))
+          );
+      });
+    });
+
+    // 2. 새 멤버 입장 알림
+    socketRef.current.on("user_joined", (data) => {
+      console.log("누군가 들어왔습니다:", data.user_id);
+      fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${data.user_id}`, {
+        headers: {
+          Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((user) =>
+          setRoomMembers((prev) => new Set(prev).add(user.nickname))
+        );
+    });
+
+    socketRef.current.on("game_started", () => {
+      console.log("게임이 시작되었습니다.");
+      toast.success("3초 뒤 게임이 시작합니다.");
+      setGameStartState(true);
     });
   }, []);
+
+  useEffect(() => {
+    console.log("게임 시작 상태:", gameStartState);
+    if (gameStartState) {
+      const timeout = setTimeout(() => {
+        const board = room?.board;
+        if (!board || !room_id)
+          return toast.error("게임을 시작할 수 없습니다.");
+
+        const query = new URLSearchParams({
+          room_id,
+          board: JSON.stringify(board),
+        }).toString();
+
+        router.replace(`/apple-game-betting?${query}`);
+      }, 3000);
+
+      return () => clearTimeout(timeout);
+    }
+  }, [gameStartState]);
 
   const sendMessage = (message: string) => {
     const token = sessionStorage.getItem("token");
@@ -92,6 +130,11 @@ export default function RoomDetailPage() {
       token,
       socket_id: socketRef.current.id,
     });
+  };
+
+  const handleStartGame = () => {
+    if (!socketRef.current) return;
+    socketRef.current.emit("start_game", { room_id: room_id });
   };
 
   return (
@@ -179,16 +222,28 @@ export default function RoomDetailPage() {
         </button>
         <button
           className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-          onClick={() => {
+          onClick={async () => {
+            const token = sessionStorage.getItem("token");
+            if (!token) return toast.error("로그인이 필요합니다.");
             const board = room?.board;
-            if (!board || !room_id) return alert("게임을 시작할 수 없습니다.");
+            if (!board || !room_id)
+              return toast.error("게임을 시작할 수 없습니다.");
 
-            const query = new URLSearchParams({
-              room_id,
-              board: JSON.stringify(board),
-            }).toString();
+            try {
+              const alreadyPlayed = await checkAlreadyPlayed(room_id, token);
+              if (alreadyPlayed) {
+                return toast.error(
+                  "이미 게임을 플레이했습니다. 다시 플레이할 수 없습니다."
+                );
+              }
 
-            router.replace(`/apple-game-betting?${query}`);
+              handleStartGame();
+            } catch (error) {
+              console.log("게임 시작 오류:", error);
+              toast.error(
+                "게임 시작에 실패했습니다. 나중에 다시 시도해주세요."
+              );
+            }
           }}
         >
           게임 시작하기
@@ -231,6 +286,12 @@ export default function RoomDetailPage() {
           </table>
         </div>
       </main>
+      <ToastContainer
+        position="bottom-right"
+        hideProgressBar
+        limit={3}
+        autoClose={1500}
+      />
     </div>
   );
 }

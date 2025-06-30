@@ -13,7 +13,7 @@ import {
 } from "../appleGameLogic";
 
 export default function AppleGame() {
-  const TOTAL_TIME = 10; // 디버깅을 위해 10초로 설정
+  const TOTAL_TIME = 120; // 디버깅을 위해 10초로 설정
 
   const [score, setScore] = useState(0);
   const [isGameRunning, setIsGameRunning] = useState(false);
@@ -245,11 +245,40 @@ export default function AppleGame() {
     };
   }, [isGameRunning]);
 
+  // 뒤로가기 감지 추가
+  useEffect(() => {
+    if (!isGameRunning) return;
+
+    // 현재 상태를 푸시해버림 → 뒤로가기 누르면 popstate 발생
+    history.pushState(null, "", window.location.href);
+
+    const handlePopState = () => {
+      if (isGameRunning) {
+        const confirmLeave = confirm(
+          "뒤로가기를 누르면 게임이 0점 처리됩니다. 정말 나가시겠습니까?"
+        );
+        if (!confirmLeave) {
+          history.pushState(null, "", window.location.href); // 다시 푸시해서 계속 현재 페이지 유지
+          return;
+        } else {
+          sendGameResult(0); // 게임 종료 시 0점으로 처리
+          window.history.back(); // 진짜 뒤로가기
+        }
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [isGameRunning]);
+
   return (
     <div id="game-container">
       <div id="score-container">
         <h2>
-          점수: <span>{score}</span>
+          점수: <span className="font-bold">{score}</span>
         </h2>
       </div>
       <div id="grid-container">
@@ -257,8 +286,10 @@ export default function AppleGame() {
         <div id="selection-box" className="hidden" ref={selectionBoxRef}></div>
         <div id="splash-screen" ref={splashRef}>
           <div className="splash-header">
-            <h1>사과 게임</h1>
-            <p>시작하려면 Play 버튼을 누르세요</p>
+            <h1 className="text-3xl font-bold text-gray-800">사과 게임</h1>
+            <p className="mt-4 text-gray-600">
+              시작하려면 Play 버튼을 누르세요
+            </p>
           </div>
           <div className="splash-content">
             <button id="start-button" onClick={startGame}>

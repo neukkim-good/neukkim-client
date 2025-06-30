@@ -28,9 +28,6 @@ export async function fetchParticipantData(link: string) {
     );
 
     if (res.ok) {
-      if (res.status === 202) {
-        console.log("재입장 했습니다");
-      }
       return link;
     } else {
       console.warn("참가 실패", res.status);
@@ -63,4 +60,21 @@ export const fetchRoomDetail = async (room_id: string, token: string) => {
     console.log("방 상세정보 요청 오류: ", error);
     throw error;
   }
+};
+
+export const checkAlreadyPlayed = async (room_id: string, token: string) => {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/room/${room_id}/check`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  if (!res.ok) throw new Error("조회 실패");
+
+  const data = await res.json();
+  return data.already_played as boolean;
 };
