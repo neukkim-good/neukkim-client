@@ -28,9 +28,6 @@ export async function fetchParticipantData(link: string) {
     );
 
     if (res.ok) {
-      if (res.status === 202) {
-        console.log("재입장 했습니다");
-      }
       return link;
     } else {
       console.warn("참가 실패", res.status);
