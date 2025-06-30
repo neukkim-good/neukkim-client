@@ -29,12 +29,16 @@ export default function NotifyPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-12 px-4">
+    <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4">
       <main className="w-full max-w-4xl">
-        <div className=" mb-10 bg-white rounded-2xl shadow-lg border border-gray-200 p-8 min-h-[280px]">
-          <h1 className="text-center text-3xl sm:text-4xl font-bold text-gray-800 mb-10">
-            🎮 게임 플레이 결과 🎮
+        <div className="text-center mb-10">
+          <h1 className="text-center text-3xl sm:text-4xl font-bold text-gray-800">
+            🎮 멀티 플레이 결과 🎮
           </h1>
+          <br></br>
+          <p className="text-gray-500">멀티 플레이 결과를 확인해보세요!</p>
+        </div>
+        <div className=" mb-10 bg-white rounded-2xl shadow-lg border border-gray-100 p-8 min-h-[280px]">
           {modalOpen && (
             // 모달 뒤 회색 영역
             <div
@@ -48,11 +52,10 @@ export default function NotifyPage() {
             >
               {/* 그 안에 모달 */}
               <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg">
-                <h2 className="text-xl font-bold mb-4">랭킹</h2>
+                <h2 className="text-xl text-black font-bold mb-4">순위</h2>
                 <ol className="list-disc list-inside space-y-1">
                   {modalData.map((user, idx) => (
                     <li key={idx} className="flex justify-between">
-                      {/* index 0, 1, 2에는 금, 은, 동 색깔 부여, 나머지는 검은색 */}
                       <style jsx>{`
                         li {
                           color: ${idx === 0
@@ -80,13 +83,12 @@ export default function NotifyPage() {
                             ? "🥉"
                             : ""}
                         </span>
-                        {/* {user[field]}{" "} */}
                       </div>
                     </li>
                   ))}
                 </ol>
                 <button
-                  className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                  className="mt-6 px-4 py-2 bg-green-600 text-white rounded hover:bg-red-500 transition"
                   onClick={() => setModalOpen(false)}
                 >
                   닫기
@@ -101,10 +103,12 @@ export default function NotifyPage() {
               <div
                 onClick={() => modalControl(room.user_list)}
                 key={idx}
-                className="mb-6 p-4 border rounded bg-white shadow hover:border-green-500"
+                className="mb-6 p-4 border rounded-2xl bg-gray-50 shadow hover:border-red-500 transition cursor-pointer"
               >
-                <h3 className="text-lg font-bold mb-1">{room.title}</h3>
-                <p className="text-sm text-gray-600 mb-2">
+                <h3 className="text-black text-lg font-bold mb-1">
+                  {room.title}
+                </h3>
+                <p className="text-sm text-gray-600 mt-2">
                   종료 시간: {new Date(room.endTime).toLocaleString()}
                 </p>
               </div>

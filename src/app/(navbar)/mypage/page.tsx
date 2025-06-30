@@ -59,9 +59,8 @@ export default function MyPage() {
         id: i,
         left: `${Math.random() * 100}vw`,
         top: `${Math.random() * 100}vh`,
-        size: Math.random() * 1.7 + 0.6, // 0.6rem ~ 2.3rem
+        size: Math.random() * 1.7 + 0.6,
         delay: `${Math.random() * 1}s`,
-        // [수정] 애니메이션 동작시간 단축 (5~12초)
         duration: `${5 + Math.random() * 7}s`,
         animationName,
       };
@@ -394,8 +393,9 @@ export default function MyPage() {
           {/* 헤더 */}
           <div className="text-center mb-10">
             <h1 className="text-3xl sm:text-4xl font-bold text-gray-800 mb-2">
-              🍏기록 페이지🍎
+              🍏마이 페이지🍎
             </h1>
+            <br></br>
             <p className="text-gray-500">기록을 확인해보세요!</p>
           </div>
 
@@ -403,19 +403,21 @@ export default function MyPage() {
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-8">
             {/* ===== 기록 섹션 ===== */}
             <div className="flex justify-between items-center border-gray-200 pb-3">
-              <span className="text-black text-2xl font-semibold">
-                오늘 최고 기록: {todayMaxScoreLoading ? "" : todayHighScore}
+              <span className="text-black text-xl font-semibold">
+                💯 오늘 최고 기록: {todayMaxScoreLoading ? "" : todayHighScore}
               </span>
-              <span className="text-black text-2xl font-semibold">
-                최근 7일 최고 기록: {weeklyScoreLoading ? "" : weeklyHighScore}
+              <span className="text-black text-xl font-semibold">
+                📋️ 최근 7일 최고 기록:{" "}
+                {weeklyScoreLoading ? "" : weeklyHighScore}
               </span>
-              <span className="text-black text-2xl font-semibold">
-                최근 7일 평균 기록: {weeklyScoreLoading ? "" : weeklyAverScore}
+              <span className="text-black text-xl font-semibold">
+                🗓️ 최근 7일 평균 기록:{" "}
+                {weeklyScoreLoading ? "" : weeklyAverScore}
               </span>
             </div>
             {/* ===== 닉네임 섹션 ===== */}
             <div className="flex justify-between items-center p-3 border-t pt-3">
-              <div className="flex items-center space-x-4 border-gray-200 pb-1">
+              <div className="flex items-center space-x-4 border-gray-200">
                 <span className="text-gray-600 font-semibold">내 닉네임:</span>
                 {isEditing ? (
                   <input
@@ -424,14 +426,14 @@ export default function MyPage() {
                     onChange={(e) => setNewNickname(e.target.value)}
                   ></input>
                 ) : (
-                  <span className="text-blue-600 font-bold text-lg">
+                  <span className="text-green-600 font-bold text-lg">
                     {isNicknameLoading ? "" : nickname}
                   </span>
                 )}
               </div>
               <button
                 onClick={handleNicknameButtonClick}
-                className="ml-4 text-white bg-blue-600 hover:bg-blue-700 font-semibold py-2 px-4 rounded-md transition-colors"
+                className="ml-4 text-white bg-green-500 hover:bg-red-500 transition font-semibold py-2 px-4 rounded-md transition-colors"
               >
                 {isEditing ? "저장" : "닉네임 변경"}
               </button>
@@ -441,8 +443,9 @@ export default function MyPage() {
             <div className="border-t pt-4">
               <button
                 onClick={handleToggleRecordsClick}
-                className="w-full text-center text-gray-700 text-2xl hover:bg-gray-100 p-3 rounded-md transition-colors"
+                className="w-full text-center text-white text-2xl hover:bg-red-500 p-3 bg-green-500 rounded-md transition-colors"
               >
+                {/* ml-4 text-white bg-green-600 hover:bg-red-500 transition font-semibold py-2 px-4 rounded-md transition-colors */}
                 {isRecordsVisible ? "기록 접기" : "기록 보기"}
               </button>
               {isRecordsVisible && (
@@ -452,7 +455,7 @@ export default function MyPage() {
                     {/* ===== 왼쪽 컬럼: 개인 기록 ===== */}
                     <div className="w-full md:w-1/2 mb-6 md:mb-0">
                       <h3 className="text-2xl text-black text-center font-semibold mb-3 pb-2 border-b">
-                        🕹️개인 기록
+                        🕹️ 혼자하기
                       </h3>
                       <div className="space-y-2">
                         {isRecordsLoading ? (
@@ -461,7 +464,7 @@ export default function MyPage() {
                           records.map((record) => (
                             <div
                               key={record.record_id}
-                              className="flex justify-between items-center p-2"
+                              className="flex justify-between items-center p-2 border-b last:border-b-0"
                             >
                               <span className="text-sm text-gray-500">
                                 {formatDateTime(record.time)}
@@ -482,7 +485,7 @@ export default function MyPage() {
                     {/* ===== 오른쪽 컬럼: 내기 기록 ===== */}
                     <div className="w-full md:w-1/2">
                       <h3 className="text-2xl text-red-500 text-center font-semibold mb-3 pb-2 border-b">
-                        🎮내기 기록
+                        🎮 같이하기
                       </h3>
                       <div className="space-y-3">
                         {isGameResultLoading ? (
@@ -497,12 +500,12 @@ export default function MyPage() {
                             .map((result) => (
                               <div
                                 key={result.room_id}
-                                className="p-2 border-b last:border-b-0"
+                                className="p-1 border-b last:border-b-0"
                               >
                                 <div className="flex justify-between items-center text-sm text-gray-500 mb-1">
                                   <span>{formatDateTime(result.endTime)}</span>
                                   <span>
-                                    멤버: ({result.totalParticipants}명)
+                                    멤버: {result.totalParticipants}명
                                   </span>
                                 </div>
                                 <div className="flex justify-between items-baseline">
