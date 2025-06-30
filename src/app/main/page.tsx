@@ -81,9 +81,7 @@ export default function MainPage() {
     <div className="grid grid-rows-[2px_22em_2px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <header className="text-center"></header>
       <main>
-        {/* ✅ 이 부분에 items-end를 추가하여 자식 요소들을 아래 기준으로 정렬합니다. */}
-        <div className="rounded-xl p-6 m-3 flex justify-around items-end">
-          {/* 혼자하기 버튼 그룹 */}
+        <div className="rounded-xl flex justify-around items-end">
           <div className="flex flex-col items-center">
             <img
               src="/sol_char2.png"
@@ -107,10 +105,7 @@ export default function MainPage() {
               </div>
             </Link>
           </div>
-
-          {/* 같이하기 버튼 (mt-80 제거) */}
           <div className="flex flex-col items-center">
-            <div className="w-32 h-32"></div>
             <Link href="/room">
               <div
                 className="group w-80 h-60 mx-8 flex flex-col items-center justify-center bg-green-500 text-white font-semibold rounded-md shadow-md hover:shadow-lg hover:bg-red-500 transition duration-300 ease-in-out"
@@ -128,8 +123,6 @@ export default function MainPage() {
               </div>
             </Link>
           </div>
-
-          {/* 랭킹 버튼 그룹 */}
           <div className="flex flex-col items-center">
             <img
               src="/sol_char1.png"

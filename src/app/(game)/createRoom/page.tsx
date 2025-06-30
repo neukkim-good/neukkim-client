@@ -19,7 +19,14 @@ export default function CreateRoomPage() {
     const date = now.getDate();
 
     // 오늘 날짜 + 입력 시간으로 Date 객체 생성 (로컬 시간)
-    const localDate = new Date(year, month, date + 1, Number(selectHour), 50, 0);
+    const localDate = new Date(
+      year,
+      month,
+      date + 1,
+      Number(selectHour),
+      50,
+      0
+    );
 
     // UTC ISO 문자열로 변환
     return localDate.toISOString();
@@ -59,21 +66,21 @@ export default function CreateRoomPage() {
   return (
     <div className="min-h-screen flex flex-col items-center  py-12 px-4">
       <main className="flex flex-col items-center bg-white rounded-2xl shadow-lg border border-gray-200 p-8 min-h-[280px]">
-        <p className="mb-2 text-lg font-bold text-gray-700">방 제목</p>
+        <p className="mb-2 text-lg font-bold text-black">방 제목</p>
         <input
           type="text"
           onChange={(e) => setTitle(e.target.value)}
           className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
         />
 
-        <p className="mb-2 text-lg font-bold text-gray-700">최대 인원 수</p>
+        <p className="mb-2 text-lg font-bold text-black">최대 인원 수</p>
         <input
           type="number"
           onChange={(e) => setMaxUser(e.target.valueAsNumber)}
           className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
         />
 
-        <p className="mb-2 text-lg font-bold text-gray-700">모집 마감 시간</p>
+        <p className="mb-2 text-lg font-bold text-black">모집 마감 시간</p>
         <div className="flex items-center space-x-2 mb-6">
           <select
             value={selectHour}
