@@ -28,14 +28,17 @@ export async function fetchParticipantData(link: string) {
     );
 
     if (res.ok) {
-      return link;
+      if (res.status === 202) {
+        return 2;
+      }
+      return 1;
     } else {
       console.warn("참가 실패", res.status);
-      return null;
+      return 0;
     }
   } catch (error) {
     console.error("Error fetching participant data:", error);
-    return null;
+    return 0;
   }
 }
 

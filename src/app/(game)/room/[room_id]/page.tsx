@@ -8,6 +8,7 @@ import { useState, useEffect, useRef } from "react";
 import { io, Socket } from "socket.io-client";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useStatusStore from "@/stores/reenter";
 
 export default function RoomDetailPage() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export default function RoomDetailPage() {
   // const [readySet, setReadySet] = useState<Set<string>>(new Set());
   const [hasClickedReady, setHasClickedReady] = useState(false);
   const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
+  const { isNew } = useStatusStore();
   const [gameStartState, setGameStartState] = useState(false);
 
   useEffect(() => {
@@ -34,7 +36,12 @@ export default function RoomDetailPage() {
       .catch((err) =>
         toast.error("방 정보를 불러오는 데 실패했습니다: " + err.message)
       );
-    toast.success("입장에 성공했습니다");
+    if (isNew) {
+      console.log(isNew);
+      toast.success("입장에 성공했습니다");
+    } else {
+      toast.success("재입장에 성공했습니다.");
+    }
   }, [room_id]);
 
   // 소켓 연결을 한 번만 설정
@@ -66,7 +73,7 @@ export default function RoomDetailPage() {
     // 1. 기존 멤버 목록 수신
     socketRef.current.on("room_members", (data) => {
       console.log("기존 멤버들:", data.user_ids);
-      data.user_ids.forEach((user_id: any) => {
+      data.user_ids.forEach((user_id: string) => {
         fetch(`${process.env.NEXT_PUBLIC_API_URL}/users/${user_id}`, {
           headers: {
             Authorization: `Bearer ${sessionStorage.getItem("token")}`,
@@ -146,7 +153,10 @@ export default function RoomDetailPage() {
         {room && (
           <div className="mt-2 text-gray-700 text-sm">
             {room.is_host && (
-              <span className="ml-2 text-green-600 font-bold">(방장)</span>
+              <span className="ml-2 text-green-600 font-bold">
+                당신은 이 방의 방장입니다. 게임 시작하기 버튼을 눌러 내기를
+                시작해 보세요!
+              </span>
             )}
           </div>
         )}
@@ -170,22 +180,14 @@ export default function RoomDetailPage() {
             </thead>
             <tbody>
               {room &&
-                Array.from(roomMembers).map((nickname, idx) => (
+                Array.from(roomMembers).map((nickname) => (
                   <tr
                     key={nickname}
-                    className={`border-t ${
-                      idx % 2 === 0 ? "bg-white" : "bg-gray-50"
-                    } hover:bg-gray-100 transition`}
+                    className="border-t bg-white hover:bg-gray-100 transition"
                   >
                     <td className="px-4 py-3 text-gray-800">{nickname}</td>
-                    <td
-                      className={`px-4 py-3 ${
-                        idx % 2 === 0
-                          ? "text-green-600 font-bold"
-                          : "text-red-600"
-                      }`}
-                    >
-                      {idx % 2 === 0 ? "Ready" : "Not Ready"}
+                    <td className="px-4 py-3 text-green-600 font-bold">
+                      Ready
                     </td>
                   </tr>
                 ))}

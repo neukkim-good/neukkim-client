@@ -4,9 +4,11 @@ import { useRouter } from "next/navigation";
 import { fetchParticipantData, fetchRoomData } from "@/services/room-service";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import useStatusStore from "@/stores/reenter";
 
 export default function RoomListPage() {
   const router = useRouter();
+  const { setNew } = useStatusStore();
   const [roomArr, setRoomArr] = useState<
     {
       _id: string;
@@ -19,11 +21,16 @@ export default function RoomListPage() {
   >([]);
   const enterRoom = function (link: string) {
     fetchParticipantData(link).then((data) => {
-      if (data === null) {
+      if (data === 0) {
         toast.error("인원이 가득찬 방입니다.");
       } else {
+        if (data === 2) {
+          setNew(false);
+        } else {
+          setNew(true);
+        }
         toast.success("입장 중입니다.");
-        router.push(`/room/${data}`);
+        router.push(`/room/${link}`);
       }
     });
   };
