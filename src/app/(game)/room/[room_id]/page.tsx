@@ -12,20 +12,11 @@ import "react-toastify/dist/ReactToastify.css";
 export default function RoomDetailPage() {
   const router = useRouter();
   const { room_id } = useParams<{ room_id: string }>();
-  // const [room, setRoom] = useState<Room | null>(null);
-
-  //   useEffect(() => {
-  //     if (!room_id) return;
-  //     fetch(`http://localhost:3000/betting/${room_id}`)
-  //       .then((res) => res.json())
-  //       .then((data: Room) => setRoom(data));
-  //   }, [room_id]);
-
-  //   if (!room) return <p>로딩 중…</p>;
-
   const [room, setRoom] = useState<RoomDetail | null>(null);
   const socketRef = useRef<Socket | null>(null);
-
+  // const [isReady, setIsReady] = useState(false);
+  // const [readySet, setReadySet] = useState<Set<string>>(new Set());
+  const [hasClickedReady, setHasClickedReady] = useState(false);
   const [roomMembers, setRoomMembers] = useState<Set<string>>(new Set());
   const [gameStartState, setGameStartState] = useState(false);
 
@@ -164,52 +155,7 @@ export default function RoomDetailPage() {
         <h2 className="text-lg font-semibold text-gray-700 mb-4">
           실시간 참가자 리스트
         </h2>
-        <div className="w-full max-w-md bg-white rounded-lg shadow p-4">
-          <h3 className="text-md font-semibold text-gray-800 mb-2">
-            현재 참가자:
-          </h3>
-          <ul className="list-disc pl-5">
-            {Array.from(roomMembers).map((member) => (
-              <li key={member} className="text-gray-700">
-                {member}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <button
-          className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-          onClick={() => sendMessage("소켓 통신 테스트")}
-        >
-          준비완료
-        </button>
-        <button
-          className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
-          onClick={async () => {
-            const token = sessionStorage.getItem("token");
-            if (!token) return toast.error("로그인이 필요합니다.");
-            const board = room?.board;
-            if (!board || !room_id)
-              return toast.error("게임을 시작할 수 없습니다.");
 
-            try {
-              const alreadyPlayed = await checkAlreadyPlayed(room_id, token);
-              if (alreadyPlayed) {
-                return toast.error(
-                  "이미 게임을 플레이했습니다. 다시 플레이할 수 없습니다."
-                );
-              }
-
-              handleStartGame();
-            } catch (error) {
-              console.log("게임 시작 오류:", error);
-              toast.error(
-                "게임 시작에 실패했습니다. 나중에 다시 시도해주세요."
-              );
-            }
-          }}
-        >
-          게임 시작하기
-        </button>
         <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white shadow">
           <table className="min-w-[300px] table-auto border-collapse">
             <thead className="bg-gray-100">
@@ -224,7 +170,7 @@ export default function RoomDetailPage() {
             </thead>
             <tbody>
               {room &&
-                room.user_list.map((nickname, idx) => (
+                Array.from(roomMembers).map((nickname, idx) => (
                   <tr
                     key={nickname}
                     className={`border-t ${
@@ -246,6 +192,66 @@ export default function RoomDetailPage() {
             </tbody>
           </table>
         </div>
+
+        {/* 방장이면 "게임 시작하기" 버튼도 있도록 */}
+        {room?.is_host ? (
+          <>
+            <button
+              className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition"
+              onClick={async () => {
+                const token = sessionStorage.getItem("token");
+                if (!token) return toast.error("로그인이 필요합니다.");
+                const board = room?.board;
+                if (!board || !room_id)
+                  return toast.error("게임을 시작할 수 없습니다.");
+
+                try {
+                  const alreadyPlayed = await checkAlreadyPlayed(
+                    room_id,
+                    token
+                  );
+                  if (alreadyPlayed) {
+                    return toast.error(
+                      "이미 게임을 플레이했습니다. 다시 플레이할 수 없습니다."
+                    );
+                  }
+
+                  handleStartGame();
+                } catch (error) {
+                  console.log("게임 시작 오류:", error);
+                  toast.error(
+                    "게임 시작에 실패했습니다. 나중에 다시 시도해주세요."
+                  );
+                }
+              }}
+              disabled={roomMembers.size < 2}
+            >
+              게임 시작하기(최소 2인)
+            </button>
+            <button
+              className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={() => {
+                sendMessage("Ready");
+                setHasClickedReady(true);
+              }}
+              disabled={hasClickedReady}
+            >
+              {hasClickedReady ? "준비 완료" : "레디"}
+            </button>
+          </>
+        ) : (
+          // 참가자용 "레디" 버튼
+          <button
+            className="w-full p-2 mt-4 bg-blue-500 text-white font-semibold rounded-md hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => {
+              sendMessage("Ready");
+              setHasClickedReady(true);
+            }}
+            disabled={hasClickedReady}
+          >
+            {hasClickedReady ? "준비 완료" : "레디"}
+          </button>
+        )}
       </main>
       <ToastContainer
         position="bottom-right"
