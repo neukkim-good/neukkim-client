@@ -99,8 +99,7 @@ export default function MainPage() {
         ) : (
           <div></div>
         )}
-        {/* ✅ 이 부분에 items-end를 추가하여 자식 요소들을 아래 기준으로 정렬합니다. */}
-        <div className="rounded-xl p-6 flex justify-around items-end">
+        <div className="rounded-xl p-6 m-10 flex justify-around items-end">
           {/* 혼자하기 버튼 그룹 */}
           <div className="flex flex-col items-center">
             <img
