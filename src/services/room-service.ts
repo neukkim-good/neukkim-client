@@ -33,7 +33,6 @@ export async function fetchParticipantData(link: string) {
       }
       return 1;
     } else {
-      console.warn("참가 실패", res.status);
       return 0;
     }
   } catch (error) {
