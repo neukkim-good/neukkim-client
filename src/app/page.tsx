@@ -118,7 +118,7 @@ export default function Home() {
                 id="loginemail"
                 value={loginEmail}
                 placeholder="example@email.com"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-black"
                 onChange={(e) => setLoginEmail(e.target.value)}
                 required
               />
@@ -136,7 +136,7 @@ export default function Home() {
                 id="loginpassword"
                 value={loginPassword}
                 placeholder="비밀번호를 입력하세요"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-black"
                 onChange={(e) => setLoginPassword(e.target.value)}
                 required
               />
@@ -163,7 +163,7 @@ export default function Home() {
                 id="signupemail"
                 value={signUpEmail}
                 placeholder="example@email.com"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-black"
                 onChange={(e) => setSignUpEmail(e.target.value)}
                 required
               />
@@ -180,7 +180,7 @@ export default function Home() {
                 id="signupnickname"
                 value={signUpNickname}
                 placeholder="홍길동"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-black"
                 onChange={(e) => setSignUpNickname(e.target.value)}
                 required
               />
@@ -198,7 +198,7 @@ export default function Home() {
                 id="signuppassword"
                 value={signUpPassword}
                 placeholder="비밀번호를 입력하세요"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-black"
                 onChange={(e) => setSignUpPassword(e.target.value)}
                 required
               />
@@ -216,7 +216,7 @@ export default function Home() {
                 id="confirm-password"
                 value={confirmPassword}
                 placeholder="비밀번호를 다시 입력하세요"
-                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-black"
+                className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 text-black"
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />

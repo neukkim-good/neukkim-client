@@ -345,11 +345,6 @@ export default function MyPage() {
     });
   };
 
-  function toKST(utcDate: Date) {
-    const kstDate = new Date(utcDate.getTime() + 9 * 60 * 60 * 1000);
-    return kstDate;
-  }
-
   return (
     <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-red-50 via-green-50 to-yellow-50">
