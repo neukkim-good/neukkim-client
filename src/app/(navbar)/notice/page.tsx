@@ -29,7 +29,7 @@ export default function NotifyPage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center py-12 px-4">
+    <div className="min-h-screen flex flex-col items-center py-12 px-4">
       <main className="w-full max-w-4xl">
         <div className="text-center mb-10">
           <h1 className="text-center text-3xl sm:text-4xl font-bold text-gray-800">

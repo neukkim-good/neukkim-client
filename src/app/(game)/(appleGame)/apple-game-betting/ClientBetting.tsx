@@ -1,4 +1,4 @@
-// (game)/apple-game/page.tsx
+// apple-game-betting/ClientBetting.tsx
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
@@ -25,6 +25,7 @@ export default function ClientBetting() {
   const [isGameRunning, setIsGameRunning] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
+  const boardRef = useRef<number[]>([]); // 사과게임 판
   const splashRef = useRef<HTMLDivElement>(null); // 사과게임 시작 전 화면
   const gridRef = useRef<HTMLDivElement>(null); // 사과게임 판
   const scoreRef = useRef<number>(0); // 현재 점수, 서버에 정확한 값을 전달하기 위함
@@ -37,8 +38,33 @@ export default function ClientBetting() {
   const dragStartRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 }); // 드래그 시작 좌표 저장
   const dragCurrentRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 }); // 드래그 중 좌표 저장
 
+  useEffect(() => {
+    boardRef.current = board;
+  }, [board]);
+
+  // 페이지 진입 즉시 게임 자동 시작
+  useEffect(() => {
+    if (!boardRef.current) {
+      alert("게임을 시작할 수 없습니다.");
+      return;
+    }
+    startGame();
+  }, []);
+
+  // 게임 종료 함수
+  const endGame = useCallback(() => {
+    setIsGameRunning(false);
+    resultModalRef.current?.classList.remove("hidden"); // 결과 띄우기
+    console.log("서버에 보낼 점수: ", scoreRef.current);
+    if (!room_id) {
+      console.error("room_id가 없습니다.");
+      return;
+    }
+    sendBettingResult(scoreRef.current, room_id); // 게임 결과 서버에 전송
+  }, [room_id]);
+
   // 타이머 시작 함수
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (timerBarRef.current) timerBarRef.current.style.width = "100%"; // 타이머 바 초기화
     if (timeRef.current) timeRef.current.textContent = TOTAL_TIME.toString();
 
@@ -58,10 +84,10 @@ export default function ClientBetting() {
         endGame(); // 게임 종료 함수 호출
       }
     }, 1000); // 1초마다 실행
-  };
+  }, [TOTAL_TIME, endGame]);
 
   // 게임 시작 함수
-  const startGame = () => {
+  const startGame = useCallback(() => {
     setScore(0);
     setIsGameRunning(true);
     if (gridRef.current && board) {
@@ -73,19 +99,7 @@ export default function ClientBetting() {
     splashRef.current?.classList.add("hidden"); // 스플래쉬 화면 숨기기
     timerContainerRef.current?.classList.remove("hidden"); // 타이머 컨테이너 보이기
     startTimer();
-  };
-
-  // 게임 종료 함수
-  const endGame = useCallback(() => {
-    setIsGameRunning(false);
-    resultModalRef.current?.classList.remove("hidden"); // 결과 띄우기
-    console.log("서버에 보낼 점수: ", scoreRef.current);
-    if (!room_id) {
-      console.error("room_id가 없습니다.");
-      return;
-    }
-    sendBettingResult(scoreRef.current, room_id); // 게임 결과 서버에 전송
-  }, [room_id]);
+  }, [board, startTimer]);
 
   // 드래그 박스 CSS 스타일 업데이트
   const updateSelectionBoxStyle = () => {
@@ -275,12 +289,6 @@ export default function ClientBetting() {
       window.removeEventListener("popstate", handlePopState);
     };
   }, [isGameRunning, room_id]);
-
-  // 페이지 진입 즉시 게임 자동 시작
-  useEffect(() => {
-    if (board) startGame();
-    else alert("게임을 시작할 수 없습니다.");
-  }, [board, startGame]);
 
   return (
     <div id="game-container">

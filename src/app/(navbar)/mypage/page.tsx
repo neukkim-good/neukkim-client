@@ -1,13 +1,12 @@
 "use client";
-import { useState, useEffect, useMemo } from "react"; // useEffect를 import 해야 합니다.
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import { User } from "@/types/api/User";
-import { Record as MyRecord } from "@/types/api/Record"; // Record 타입을 정의한 파일을 import 합니다.
+import { Record as MyRecord } from "@/types/api/Record";
 import { GameResult as MyGameResult } from "@/types/api/GameResult";
 import Image from "next/image";
 import { Apple } from "lucide-react";
-// 파티클 데이터 타입을 정의합니다.
 interface Particle {
   id: number;
   left: string;
@@ -15,7 +14,7 @@ interface Particle {
   size: number;
   delay: string;
   duration: string;
-  animationName: string; // 애니메이션 클래스 이름을 저장할 속성
+  animationName: string;
 }
 
 interface RecordList {
@@ -28,7 +27,7 @@ interface GameResultList {
 
 export default function MyPage() {
   const [particles, setParticles] = useState<Particle[]>([]);
-  // 다양한 애니메이션 클래스 조합
+  // 애니메이션 조합
   const animations = useMemo(
     () => [
       "animate-fly-1",
@@ -46,9 +45,9 @@ export default function MyPage() {
   );
 
   useEffect(() => {
-    // 사과 개수를 40개로 증가, 애니메이션 조합 적용
+    // 사과 개수를 40개
     const newParticles = [...Array(40)].map((_, i) => {
-      // 2~3개의 애니메이션을 랜덤 조합
+      // 2~3개의 애니메이션 랜덤 조합
       const animCount = 2 + Math.floor(Math.random() * 2);
       const randomAnimations = Array.from(
         { length: animCount },
@@ -114,7 +113,7 @@ export default function MyPage() {
           setTodayHighScore(data.todayMaxScore);
         } catch (err: any) {
           setError(err.message);
-          setTodayHighScore("정보 없음");
+          setTodayHighScore("0");
         } finally {
           setTodayMaxScoreLoading(false);
         }
@@ -237,15 +236,6 @@ export default function MyPage() {
     }
   }, [isRecordsVisible, records.length]);
 
-  // 오늘 최고 기록 / 주간 최고 기록 / 주간 평균 기록
-
-  // 개인 기록                    내기 기록
-  // 2020.10.10.14:00 120점      2020. 10. 10. 14:00 방제목 멤버:() 등수:() 120점
-
-  // "user_id": "685b939bf38ea3d4d95f8271",
-  // "score": 70,
-  // "time": "2025-06-25T14:42:00.000Z"
-
   // --- 내기 기록(GameResult) 로직 ---
   useEffect(() => {
     if (isRecordsVisible && gameResult.length === 0) {
@@ -343,7 +333,9 @@ export default function MyPage() {
       return "유효하지 않은 날짜";
     }
 
+    // 이 함수가 항상 한국 시간을 반환하도록 timeZone 옵션을 추가합니다.
     return date.toLocaleString("ko-KR", {
+      timeZone: "Asia/Seoul", // <<< 이 옵션을 추가하는 것이 핵심입니다.
       year: "numeric",
       month: "2-digit",
       day: "2-digit",
@@ -352,10 +344,9 @@ export default function MyPage() {
       hour12: false,
     });
   };
+
   return (
-    // 1. 전체를 감싸는 부모 컨테이너에 relative 속성 추가
     <div className="relative min-h-screen overflow-hidden">
-      {/* 2. 배경 애니메이션 컨테이너. absolute로 화면 전체를 채우고 z-0으로 맨 뒤로 보냄 */}
       <div className="absolute inset-0 z-0 bg-gradient-to-br from-red-50 via-green-50 to-yellow-50">
         <div className="absolute inset-0 pointer-events-none">
           {particles.map((p) => (
@@ -387,7 +378,6 @@ export default function MyPage() {
         </div>
       </div>
 
-      {/* 3. 실제 페이지 콘텐츠. relative와 z-10으로 배경 위에 위치하도록 설정 */}
       <div className="relative z-10 flex min-h-screen flex-col items-center py-12 px-4">
         <main className="w-full max-w-4xl">
           {/* 헤더 */}
@@ -399,7 +389,6 @@ export default function MyPage() {
             <p className="text-gray-500">기록을 확인해보세요!</p>
           </div>
 
-          {/* 4. 메인 콘텐츠 카드에 반투명 배경과 블러 효과 추가 */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-gray-200 p-8">
             {/* ===== 기록 섹션 ===== */}
             <div className="flex justify-between items-center border-gray-200 pb-3">
@@ -415,6 +404,7 @@ export default function MyPage() {
                 {weeklyScoreLoading ? "" : weeklyAverScore}
               </span>
             </div>
+
             {/* ===== 닉네임 섹션 ===== */}
             <div className="flex justify-between items-center p-3 border-t pt-3">
               <div className="flex items-center space-x-4 border-gray-200">
@@ -445,7 +435,6 @@ export default function MyPage() {
                 onClick={handleToggleRecordsClick}
                 className="w-full text-center text-white text-2xl hover:bg-red-500 p-3 bg-green-500 rounded-md transition-colors"
               >
-                {/* ml-4 text-white bg-green-600 hover:bg-red-500 transition font-semibold py-2 px-4 rounded-md transition-colors */}
                 {isRecordsVisible ? "기록 접기" : "기록 보기"}
               </button>
               {isRecordsVisible && (
@@ -459,15 +448,16 @@ export default function MyPage() {
                       </h3>
                       <div className="space-y-2">
                         {isRecordsLoading ? (
-                          <p>개인 기록을 불러오는 중입니다...</p>
+                          <p>...</p>
                         ) : records.length > 0 ? (
-                          records.map((record) => (
+                          records.map((record, index) => (
                             <div
-                              key={record.record_id}
+                              key={record.record_id + "_" + index}
                               className="flex justify-between items-center p-2 border-b last:border-b-0"
                             >
                               <span className="text-sm text-gray-500">
-                                {formatDateTime(record.time)}
+                                {new Date(record.time).toLocaleString()}
+                                {/* {new Date(result.endTime).toLocaleString()} */}
                               </span>
                               <span className="text-md font-semibold text-gray-800">
                                 {record.score}점
@@ -475,9 +465,7 @@ export default function MyPage() {
                             </div>
                           ))
                         ) : (
-                          <p className="text-gray-500">
-                            표시할 개인 기록이 없습니다.
-                          </p>
+                          <p className="text-gray-500"></p>
                         )}
                       </div>
                     </div>
@@ -489,7 +477,7 @@ export default function MyPage() {
                       </h3>
                       <div className="space-y-3">
                         {isGameResultLoading ? (
-                          <p>내기 기록을 불러오는 중입니다...</p>
+                          <p>...</p>
                         ) : gameResult.length > 0 ? (
                           [...gameResult]
                             .sort(
@@ -497,9 +485,9 @@ export default function MyPage() {
                                 new Date(b.endTime).getTime() -
                                 new Date(a.endTime).getTime()
                             )
-                            .map((result) => (
+                            .map((result, index) => (
                               <div
-                                key={result.room_id}
+                                key={result.result_id + "_" + index}
                                 className="p-1 border-b last:border-b-0"
                               >
                                 <div className="flex justify-between items-center text-sm text-gray-500 mb-1">
@@ -524,9 +512,7 @@ export default function MyPage() {
                               </div>
                             ))
                         ) : (
-                          <p className="text-gray-500">
-                            표시할 내기 기록이 없습니다.
-                          </p>
+                          <p className="text-gray-500"></p>
                         )}
                       </div>
                     </div>
