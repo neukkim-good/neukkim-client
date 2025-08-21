@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import "../style.css"; // Import your CSS styles
 import { sendGameResult } from "@/services/applegame-service";
+import { useThemeStore } from "@/stores/themeStore";
 import {
   createGrid,
   getSelectionBoxCoords,
@@ -14,6 +15,8 @@ import {
 
 export default function AppleGame() {
   const TOTAL_TIME = 120; // 디버깅을 위해 10초로 설정
+  const appleColor = useThemeStore((s) => s.appleColor);
+  const appleClass = appleColor === "green" ? "apple-green" : "apple";
 
   const [score, setScore] = useState(0);
   const [isGameRunning, setIsGameRunning] = useState(false);
@@ -60,7 +63,7 @@ export default function AppleGame() {
   const startGame = () => {
     setScore(0);
     setIsGameRunning(true);
-    if (gridRef.current) createGrid(gridRef.current);
+    if (gridRef.current) createGrid(gridRef.current, undefined, appleClass);
     splashRef.current?.classList.add("hidden"); // 스플래쉬 화면 숨기기
     timerContainerRef.current?.classList.remove("hidden"); // 타이머 컨테이너 보이기
     startTimer();
@@ -78,7 +81,7 @@ export default function AppleGame() {
   const restartGame = () => {
     setScore(0);
     setIsGameRunning(true);
-    if (gridRef.current) createGrid(gridRef.current);
+    if (gridRef.current) createGrid(gridRef.current, undefined, appleClass);
     resultModalRef.current?.classList.add("hidden"); // 결과 모달 숨기기
     timerContainerRef.current?.classList.remove("hidden"); // 타이머 컨테이너 보이기
     startTimer();
@@ -141,8 +144,8 @@ export default function AppleGame() {
       const { sum, selectedApples } = getSelectedApples(grid, selection);
 
       const apples = Array.from(
-        grid.querySelectorAll<HTMLDivElement>(".apple")
-      ); // 사과 요소들 가져오기
+        grid.querySelectorAll<HTMLDivElement>(".apple, .apple-green")
+      ); // 사과 요소들 가져오기 (테마별 클래스 모두)
       apples.forEach((apple) => apple.classList.remove("selected-apple")); // 전체 스타일 제거 후
       selectedApples.forEach((apple) => apple.classList.add("selected-apple")); // 선택된 사과만 스타일 적용
 
@@ -180,7 +183,7 @@ export default function AppleGame() {
         apple.addEventListener(
           "animationend", // 애니메이션 종료 이벤트
           () => {
-            apple.classList.remove("apple", "pop"); // 애니메이션 끝나면 pop 클래스 제거
+            apple.classList.remove("apple", "apple-green", "pop"); // 애니메이션 끝나면 pop 클래스 제거 및 테마 클래스 제거
             apple.classList.add("empty"); // 빈 사과 표시
             apple.textContent = ""; // 사과 내용 비우기
             apple.dataset.value = "0"; // 사과 값 0으로 초기화
@@ -191,7 +194,9 @@ export default function AppleGame() {
       setScore((prev) => prev + selectedApples.length); // 점수 업데이트
     }
 
-    const apples = Array.from(grid.querySelectorAll<HTMLDivElement>(".apple"));
+    const apples = Array.from(
+      grid.querySelectorAll<HTMLDivElement>(".apple, .apple-green")
+    );
     apples.forEach((apple) => apple.classList.remove("selected-apple"));
   }, []);
 

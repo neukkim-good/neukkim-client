@@ -10,8 +10,11 @@ import {
   getSelectionBoxCoords,
   getSelectedApples,
 } from "../appleGameLogic";
+import { useThemeStore } from "@/stores/themeStore";
 
 export default function ClientBetting() {
+  const appleColor = useThemeStore((s) => s.appleColor);
+  const appleClass = appleColor === "green" ? "apple-green" : "apple";
   const TOTAL_TIME = 120; // 디버깅을 위해 10초로 설정
 
   const router = useRouter();
@@ -91,7 +94,7 @@ export default function ClientBetting() {
     setScore(0);
     setIsGameRunning(true);
     if (gridRef.current && board) {
-      createGridWithValues(gridRef.current, board); // 배열을 전달해서 grid 생성
+      createGridWithValues(gridRef.current, board, appleClass); // 배열을 전달해서 grid 생성 (테마 반영)
     } else {
       alert("게임을 시작할 수 없습니다.");
       return;
@@ -158,8 +161,8 @@ export default function ClientBetting() {
       const { sum, selectedApples } = getSelectedApples(grid, selection);
 
       const apples = Array.from(
-        grid.querySelectorAll<HTMLDivElement>(".apple")
-      ); // 사과 요소들 가져오기
+        grid.querySelectorAll<HTMLDivElement>(".apple, .apple-green")
+      ); // 사과 요소들 가져오기 (테마별 클래스 모두)
       apples.forEach((apple) => apple.classList.remove("selected-apple")); // 전체 스타일 제거 후
       selectedApples.forEach((apple) => apple.classList.add("selected-apple")); // 선택된 사과만 스타일 적용
 
@@ -197,7 +200,7 @@ export default function ClientBetting() {
         apple.addEventListener(
           "animationend", // 애니메이션 종료 이벤트
           () => {
-            apple.classList.remove("apple", "pop"); // 애니메이션 끝나면 pop 클래스 제거
+            apple.classList.remove("apple", "apple-green", "pop"); // 애니메이션 끝나면 pop 클래스 제거 및 테마 클래스 제거
             apple.classList.add("empty"); // 빈 사과 표시
             apple.textContent = ""; // 사과 내용 비우기
             apple.dataset.value = "0"; // 사과 값 0으로 초기화
@@ -208,7 +211,9 @@ export default function ClientBetting() {
       setScore((prev) => prev + selectedApples.length); // 점수 업데이트
     }
 
-    const apples = Array.from(grid.querySelectorAll<HTMLDivElement>(".apple"));
+    const apples = Array.from(
+      grid.querySelectorAll<HTMLDivElement>(".apple, .apple-green")
+    );
     apples.forEach((apple) => apple.classList.remove("selected-apple"));
   }, []);
 

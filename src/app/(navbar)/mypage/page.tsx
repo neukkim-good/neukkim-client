@@ -1,12 +1,10 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
-import { useUserStore } from "@/stores/userStore";
-import { User } from "@/types/api/User";
 import { Record as MyRecord } from "@/types/api/Record";
 import { GameResult as MyGameResult } from "@/types/api/GameResult";
-import Image from "next/image";
+import { useThemeStore } from "@/stores/themeStore";
 import { Apple } from "lucide-react";
+
 interface Particle {
   id: number;
   left: string;
@@ -17,15 +15,9 @@ interface Particle {
   animationName: string;
 }
 
-interface RecordList {
-  records: MyRecord[];
-}
-
-interface GameResultList {
-  gameResults: MyGameResult[];
-}
-
 export default function MyPage() {
+  const appleColor = useThemeStore((s) => s.appleColor);
+  const toggleAppleColor = useThemeStore((s) => s.toggleAppleColor);
   const [particles, setParticles] = useState<Particle[]>([]);
   // 애니메이션 조합
   const animations = useMemo(
@@ -70,7 +62,6 @@ export default function MyPage() {
   const [nickname, setNickname] = useState("");
   const [isNicknameLoading, setIsNicknameLoading] = useState(true);
   const [isRecordsVisible, setIsRecordsVisible] = useState(false);
-  const [isGameResultVisible, setIsGameResultVisible] = useState(true);
   const [records, setRecords] = useState<MyRecord[]>([]);
   const [gameResult, setGameResult] = useState<MyGameResult[]>([]);
   const [isGameResultLoading, setIsGameResultLoading] = useState(false);
@@ -87,7 +78,6 @@ export default function MyPage() {
   const [weeklyHighScore, setWeeklyHighScore] = useState("");
   const [weeklyAverScore, setWeeklyAverScore] = useState("");
 
-  const user = useUserStore((s) => s.user);
   const API = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
@@ -111,8 +101,8 @@ export default function MyPage() {
           }
           const data = await response.json();
           setTodayHighScore(data.todayMaxScore);
-        } catch (err: any) {
-          setError(err.message);
+        } catch (err: unknown) {
+          setError(err instanceof Error ? err.message : "문제가 발생했습니다.");
           setTodayHighScore("0");
         } finally {
           setTodayMaxScoreLoading(false);
@@ -120,7 +110,7 @@ export default function MyPage() {
       };
       fetchTodayHighScore();
     }
-  }, []);
+  }, [API]);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -144,8 +134,8 @@ export default function MyPage() {
           const data = await response.json();
           setWeeklyHighScore(data.weeklyMaxScore);
           setWeeklyAverScore(data.weeklyAverageScore);
-        } catch (err: any) {
-          setError(err.message);
+        } catch (err: unknown) {
+          setError(err instanceof Error ? err.message : "문제가 발생했습니다.");
           setTodayHighScore("정보 없음");
         } finally {
           setWeeklyScoreLoading(false);
@@ -153,7 +143,7 @@ export default function MyPage() {
       };
       fetchWeeklyScore();
     }
-  }, []);
+  }, [API]);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
@@ -178,8 +168,8 @@ export default function MyPage() {
 
           const data = await response.json();
           setNickname(data.nickname || "");
-        } catch (err: any) {
-          setError(err.message);
+        } catch (err: unknown) {
+          setError(err instanceof Error ? err.message : "문제가 발생했습니다.");
           setNickname("정보 없음");
         } finally {
           setIsNicknameLoading(false);
@@ -191,7 +181,7 @@ export default function MyPage() {
       setIsNicknameLoading(false);
       setNickname("로그인이 필요합니다.");
     }
-  }, []);
+  }, [API]);
 
   // --- 개인 기록 데이터 Fetch 로직 ---
   useEffect(() => {
@@ -225,8 +215,8 @@ export default function MyPage() {
 
           const data = await response.json();
           setRecords(data);
-        } catch (err: any) {
-          setError(err.message);
+        } catch (err: unknown) {
+          setError(err instanceof Error ? err.message : "문제가 발생했습니다.");
         } finally {
           setIsRecordsLoading(false);
         }
@@ -234,7 +224,7 @@ export default function MyPage() {
 
       fetchRecords();
     }
-  }, [isRecordsVisible, records.length]);
+  }, [isRecordsVisible, records.length, API]);
 
   // --- 내기 기록(GameResult) 로직 ---
   useEffect(() => {
@@ -263,8 +253,8 @@ export default function MyPage() {
           console.log(response);
           const data: MyGameResult[] = await response.json();
           setGameResult(data);
-        } catch (err: any) {
-          setError(err.message);
+        } catch (err: unknown) {
+          setError(err instanceof Error ? err.message : "문제가 발생했습니다.");
         } finally {
           setIsGameResultLoading(false);
         }
@@ -315,8 +305,8 @@ export default function MyPage() {
       const data = await response.json();
       setNickname(data.nickname || ""); // 성공 시, 화면에 표시되는 닉네임 업데이트
       setIsEditing(false); // 수정 모드 종료
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "문제가 발생했습니다.");
     } finally {
       setIsNicknameLoading(false); // 로딩 표시 종료
     }
@@ -407,26 +397,47 @@ export default function MyPage() {
 
             {/* ===== 닉네임 섹션 ===== */}
             <div className="flex justify-between items-center p-3 border-t pt-3">
-              <div className="flex items-center space-x-4 border-gray-200">
-                <span className="text-gray-600 font-semibold">내 닉네임:</span>
-                {isEditing ? (
-                  <input
-                    className="text-gray-600 font-bold text-lg"
-                    value={newNickname}
-                    onChange={(e) => setNewNickname(e.target.value)}
-                  ></input>
-                ) : (
-                  <span className="text-green-600 font-bold text-lg">
-                    {isNicknameLoading ? "" : nickname}
+              <div className="flex flex-row justify-between">
+                <div className="flex items-center space-x-4 border-gray-200">
+                  <span className="text-gray-600 font-semibold">
+                    내 닉네임:
                   </span>
-                )}
+                  {isEditing ? (
+                    <input
+                      className="text-gray-600 font-bold text-lg"
+                      value={newNickname}
+                      onChange={(e) => setNewNickname(e.target.value)}
+                    ></input>
+                  ) : (
+                    <span className="text-green-600 font-bold text-lg">
+                      {isNicknameLoading ? "" : nickname}
+                    </span>
+                  )}
+                </div>
+                <button
+                  onClick={handleNicknameButtonClick}
+                  className="ml-4 text-white bg-green-500 hover:bg-red-500 font-semibold py-2 px-4 rounded-md transition-colors"
+                >
+                  {isEditing ? "저장" : "닉네임 변경"}
+                </button>
               </div>
-              <button
-                onClick={handleNicknameButtonClick}
-                className="ml-4 text-white bg-green-500 hover:bg-red-500 transition font-semibold py-2 px-4 rounded-md transition-colors"
-              >
-                {isEditing ? "저장" : "닉네임 변경"}
-              </button>
+
+              <div className="flex items-center gap-3">
+                <span className="text-gray-600 font-semibold">테마 변경</span>
+                <button
+                  onClick={toggleAppleColor}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    appleColor === "green" ? "bg-green-500" : "bg-red-500"
+                  }`}
+                  aria-label="사과 색상 토글"
+                >
+                  <span
+                    className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${
+                      appleColor === "green" ? "translate-x-5" : "translate-x-1"
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
 
             {/* ===== 내 기록 보기 섹션 ===== */}
