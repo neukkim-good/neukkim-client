@@ -6,24 +6,13 @@ export default function CreateRoomPage() {
   const [title, setTitle] = useState("");
   const [maxUser, setMaxUser] = useState(0);
   const [token, setToken] = useState<string | null>("");
-  const [selectHour, setSelectHour] = useState("8");
   const router = useRouter();
-  const timeList = [
-    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23,
-  ];
 
   // 시간 가공 함수
   function getToday() {
-    // 오늘 날짜 구하기
+    // 현재 시각으로부터 10분 후로 설정
     const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth();
-    const date = now.getDate();
-
-    // 오늘 날짜 + 입력 시간으로 Date 객체 생성 (로컬 시간)
-    const localDate = new Date(year, month, date, Number(selectHour), 50, 0);
-
+    const localDate = new Date(now.getTime() + 10 * 60 * 1000);
     // UTC ISO 문자열로 변환
     return localDate.toISOString();
   }
@@ -75,22 +64,6 @@ export default function CreateRoomPage() {
           onChange={(e) => setMaxUser(e.target.valueAsNumber)}
           className="w-full mb-4 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 transition"
         />
-
-        <p className="mb-2 text-lg font-bold text-gray-700">모집 마감 시간</p>
-        <div className="flex items-center space-x-2 mb-6">
-          <select
-            value={selectHour}
-            onChange={(e) => setSelectHour(e.target.value)}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-red-500 transition"
-          >
-            {timeList.map((val, idx) => (
-              <option key={idx} value={val}>
-                {val}시
-              </option>
-            ))}
-          </select>
-          <span className="text-gray-600">50분</span>
-        </div>
 
         {title === "" || maxUser === 0 ? (
           <button

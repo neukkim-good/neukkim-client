@@ -4,7 +4,11 @@ export const GRID_COLS = 17;
 export const GRID_ROWS = 10;
 
 // 사과 생성 함수(랜덤)
-export function createGrid(gridElement: HTMLElement, gridData?: number[]) {
+export function createGrid(
+  gridElement: HTMLElement,
+  gridData?: number[],
+  appleClass: "apple" | "apple-green" = "apple"
+) {
   if (!gridElement) return;
   gridElement.innerHTML = "";
 
@@ -16,7 +20,7 @@ export function createGrid(gridElement: HTMLElement, gridData?: number[]) {
 
   for (let i = 0; i < totalItems; i++) {
     const apple = document.createElement("div"); // 사과 하나 생성
-    apple.className = "apple"; //  나중에 css에서 사과 스타일링을 위해 apple 클래스 추가
+    apple.className = appleClass; // 테마에 따른 사과 클래스 적용
     const value = data[i]; // 사과의 값 설정
     apple.textContent = value.toString(); // 사과 텍스트
     apple.dataset.value = value.toString(); // 사과 값 저장
@@ -27,7 +31,8 @@ export function createGrid(gridElement: HTMLElement, gridData?: number[]) {
 // 외부에서 170개 값을 받아서 사과를 생성하는 함수
 export function createGridWithValues(
   gridElement: HTMLElement,
-  values: number[]
+  values: number[],
+  appleClass: "apple" | "apple-green" = "apple"
 ) {
   if (!gridElement) return;
 
@@ -44,7 +49,7 @@ export function createGridWithValues(
 
   for (let i = 0; i < totalItems; i++) {
     const apple = document.createElement("div"); // 사과 하나 생성
-    apple.className = "apple"; // 스타일을 위해 클래스 부여
+    apple.className = appleClass; // 테마에 따라 클래스 부여
     const value = values[i];
     apple.textContent = value.toString(); // 사과 텍스트
     apple.dataset.value = value.toString(); // 데이터 값 저장
@@ -74,8 +79,8 @@ export function getSelectedApples(
 ) {
   const gridRect = gridElement.getBoundingClientRect();
   const apples = Array.from(
-    gridElement.querySelectorAll<HTMLDivElement>(".apple")
-  ); // 사과 요소들 가져오기
+    gridElement.querySelectorAll<HTMLDivElement>(".apple, .apple-green")
+  ); // 사과 요소들 가져오기 (테마별 클래스 모두)
 
   const adjustedSelection = {
     left: selection.left - gridRect.left,
