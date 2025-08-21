@@ -15,6 +15,9 @@ import { useThemeStore } from "@/stores/themeStore";
 export default function ClientBetting() {
   const appleColor = useThemeStore((s) => s.appleColor);
   const appleClass = appleColor === "green" ? "apple-green" : "apple";
+  const startTextId =
+    appleColor === "green" ? "splash-screen-green" : "splash-screen";
+
   const TOTAL_TIME = 120; // 디버깅을 위해 10초로 설정
 
   const router = useRouter();
@@ -305,7 +308,7 @@ export default function ClientBetting() {
       <div id="grid-container">
         <div id="grid" ref={gridRef}></div>
         <div id="selection-box" className="hidden" ref={selectionBoxRef}></div>
-        <div id="splash-screen" ref={splashRef}>
+        <div id={startTextId} ref={splashRef}>
           <div className="splash-header">
             <h1 className="text-3xl font-bold text-gray-800">사과 게임</h1>
             <p className="mt-4 text-gray-600">

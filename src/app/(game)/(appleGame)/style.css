@@ -176,20 +176,47 @@ body {
   padding: 20px;
 }
 
+#splash-screen-green {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    #eaffee,
+    #f5fff5
+  ); /* 부드러운 밝은 배경 */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 10;
+  padding: 20px;
+}
+
 #splash-screen h1 {
   font-size: 48px;
   margin: 0 0 15px;
   color: #d90000;
   letter-spacing: 2px;
 }
+#splash-screen-green h1 {
+  font-size: 48px;
+  margin: 0 0 15px;
+  color: #168825;
+  letter-spacing: 2px;
+}
 
-#splash-screen p {
+#splash-screen,
+#splash-screen-green p {
   font-size: 20px;
   margin: 10px 0 20px;
   color: #555;
 }
 
-/* 시작 버튼: 사과 모양으로 디자인 */
+/* 시작 버튼: 사과 모양으로 디자인 (레드 기본) */
 #start-button {
   display: flex;
   justify-content: center;
@@ -209,8 +236,30 @@ body {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-/* 줄기 */
-#start-button::after {
+
+/* 시작 버튼: 초록 테마 */
+#start-button-green {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  background: radial-gradient(circle at 30% 25%, #39c63e, #39c63e);
+  border: 2px solid #2b922d;
+  border-radius: 40% 40% 55% 55% / 50% 50% 70% 70%; /* 사과 찌그러진 형태 */
+  font-weight: bold;
+  font-size: 20px;
+  color: white;
+  user-select: none;
+  position: relative;
+  box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.3),
+    0 3px 6px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+/* 줄기 (공통) */
+#start-button::after,
+#start-button-green::after {
   content: "";
   position: absolute;
   top: -8px;
@@ -221,7 +270,7 @@ body {
   border-radius: 2px;
   transform: rotate(-25deg);
 }
-/* 잎사귀 */
+/* 잎사귀 (레드) */
 #start-button::before {
   content: "";
   position: absolute;
@@ -233,7 +282,19 @@ body {
   border-radius: 60%;
   transform: rotate(-50deg);
 }
-#start-button:hover {
+#start-button-green::before {
+  content: "";
+  position: absolute;
+  top: -11px;
+  left: 50px;
+  width: 12px;
+  height: 16px;
+  background: #409643;
+  border-radius: 60%;
+  transform: rotate(-50deg);
+}
+#start-button:hover,
+#start-button-green:hover {
   transform: scale(1.1);
   box-shadow: inset -2px -2px 5px rgba(255, 255, 255, 0.4),
     0 5px 10px rgba(0, 0, 0, 0.4);
@@ -293,7 +354,8 @@ body {
   }
 }
 
-#start-button {
+#start-button,
+#start-button-green {
   padding: 10px 20px;
   font-size: 16px;
   margin-bottom: 10px;
